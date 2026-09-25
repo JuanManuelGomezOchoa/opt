@@ -2,17 +2,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require_once __DIR__ . '/app/config/config.php';
 require 'dbcon.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\PHPMailer.php';
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\SMTP.php';
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\Exception.php';
-
-
-require 'vendor/autoload.php';
 
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
@@ -130,11 +124,11 @@ if (isset($_POST['save'])) {
         if ($query_run) {
 
             // Configuracion SMTP
-            $host = 'smtp.gmail.com';
-            $port = 587;
-            $username = 'manuelgomezderiva00@gmail.com';
-            $password = 'svdnjsibsbwypuih';
-            $security = 'tls';
+            $host = env('SMTP_ADMIN_HOST');
+            $port = (int) env('SMTP_ADMIN_PORT');
+            $username = env('SMTP_ADMIN_USER');
+            $password = env('SMTP_ADMIN_PASS');
+            $security = env('SMTP_ADMIN_SECURITY', 'tls');
 
 
             // Crear instancia PHPMailer
@@ -153,7 +147,7 @@ if (isset($_POST['save'])) {
 
 
             // Configurar correo
-            $mail->setFrom('no-reply@midominio.mx', 'Mi Empresa');
+            $mail->setFrom(env('SMTP_ADMIN_FROM_EMAIL'), env('SMTP_ADMIN_FROM_NAME'));
             // $mail->addReplyTo($email, $nombreuser);
             $mail->addAddress($email);
             $mail->Subject = 'NUEVO USUARIO';

@@ -41,7 +41,7 @@ if (!empty($alert)) {
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/menu.css">
     <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSynovc&libraries=places&callback=initMap" async></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?= htmlspecialchars(env('GOOGLE_MAPS_API_KEY'), ENT_QUOTES, 'UTF-8'); ?>&libraries=places&callback=initMap" async></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let cart = localStorage.getItem("empresaCart");

@@ -3,15 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
-
-require_once __DIR__ . '/vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+require_once __DIR__ . '/app/config/config.php';
 
 use Openpay\Data\Openpay;
 use Openpay\Data\OpenpayApiTransactionError;
@@ -21,10 +13,6 @@ use Openpay\Data\OpenpayApiAuthError;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\PHPMailer.php';
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\SMTP.php';
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\Exception.php';
 
 require 'dbcon.php';
 
@@ -48,7 +36,14 @@ if (isset($_POST['delete'])) {
 if (isset($_POST['update'])) {
 
     if (!isset($_POST['identificador']) || empty($_POST['identificador'])) {
-        die('Identificador no recibido');
+        error_log('codepago.php: identificador no recibido');
+        $_SESSION['alert'] = [
+            'title'   => 'ERROR',
+            'message' => 'No se recibió el identificador del pedido',
+            'icon'    => 'error'
+        ];
+        header('Location: pedido.php');
+        exit;
     }
 
     $identificador = $_POST['identificador'];
@@ -62,7 +57,14 @@ if (isset($_POST['update'])) {
 ");
 
     if (!$stmt) {
-        die($con->error);
+        error_log('codepago.php: fallo al preparar el pedido: ' . $con->error);
+        $_SESSION['alert'] = [
+            'title'   => 'ERROR',
+            'message' => 'Ocurrió un error, inténtalo de nuevo',
+            'icon'    => 'error'
+        ];
+        header("Location: pago.php?id=$identificador");
+        exit;
     }
 
     $stmt->bind_param("s", $identificador);
@@ -79,7 +81,14 @@ if (isset($_POST['update'])) {
     );
 
     if (!$stmt->fetch()) {
-        die('Pedido no encontrado');
+        error_log('codepago.php: pedido no encontrado: ' . $identificador);
+        $_SESSION['alert'] = [
+            'title'   => 'ERROR',
+            'message' => 'No se encontró el pedido',
+            'icon'    => 'error'
+        ];
+        header("Location: pago.php?id=$identificador");
+        exit;
     }
 
 
@@ -95,13 +104,13 @@ if (isset($_POST['update'])) {
 
 
     $openpay = Openpay::getInstance(
-        $_ENV['OPENPAY_ID'],
-        $_ENV['OPENPAY_SK'],
-        $_ENV['OPENPAY_COUNTRY'],
+        env('OPENPAY_MERCHANT_ID'),
+        env('OPENPAY_PRIVATE_KEY'),
+        env('OPENPAY_COUNTRY'),
         $_SERVER['REMOTE_ADDR']
     );
 
-    Openpay::setProductionMode(false);
+    Openpay::setProductionMode(filter_var(env('OPENPAY_PRODUCTION_MODE', 'false'), FILTER_VALIDATE_BOOLEAN));
 
     $customer = [
         'name'         => $pedido['nombre'],
@@ -125,7 +134,7 @@ if (isset($_POST['update'])) {
                 'order_id'          => $identificador . '_' . time(),
                 'device_session_id' => $_POST["deviceIdHiddenFieldName"],
                 'customer'          => $customer,
-                'redirect_url'      => 'https://midominio.mx/productos/openpay-respuesta.php'
+                'redirect_url'      => env('OPENPAY_REDIRECT_URL')
             );
         } else {
 
@@ -328,14 +337,14 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
 {
     $mail = new PHPMailer(true);
     $mail->isSMTP();
-    $mail->Host = 'mail.dominio.mx';
-    $mail->Port = 465;
+    $mail->Host = env('SMTP_NOREPLY_HOST');
+    $mail->Port = (int) env('SMTP_NOREPLY_PORT');
     $mail->SMTPAuth = true;
-    $mail->Username = 'no-reply@dominio.mx';
-    $mail->Password = '=@dH6mqA5H7%MEa,';
-    $mail->SMTPSecure = 'ssl';
+    $mail->Username = env('SMTP_NOREPLY_USER');
+    $mail->Password = env('SMTP_NOREPLY_PASS');
+    $mail->SMTPSecure = env('SMTP_NOREPLY_SECURITY', 'ssl');
 
-    $mail->setFrom('no-reply@dominio.mx', 'MI EMPRESA');
+    $mail->setFrom(env('SMTP_NOREPLY_FROM_EMAIL'), env('SMTP_NOREPLY_FROM_NAME'));
     $mail->addAddress($email);
     $mail->Subject = 'Realiza tu pago por SPEI';
     $mail->CharSet = 'UTF-8';
@@ -389,9 +398,9 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
 <p><strong>Convenio CIE (Con BBVA):</strong> ' . htmlspecialchars(implode(' ', str_split($convenio, 3)), ENT_QUOTES, 'UTF-8') . '</p>
         </div>
 
-        <p>También puedes consultar la referencia de pago <a href="https://dominio.mx/productos/orden.php?id=' . $identificador . '" target="_blank">aquí</a>.</p>
+        <p>También puedes consultar la referencia de pago <a href="' . STORE_URL . '/orden.php?id=' . $identificador . '" target="_blank">aquí</a>.</p>
 
-        <p>¿Quieres cambiar tu método de pago o necesitas generar una nueva referencia SPEI? Ingresa a: <a href="https://dominio.mx/productos/pago.php?id=' . $identificador . '">https://dominio.mx/productos/pago.php?id=' . $identificador . '</a></p>
+        <p>¿Quieres cambiar tu método de pago o necesitas generar una nueva referencia SPEI? Ingresa a: <a href="' . STORE_URL . '/pago.php?id=' . $identificador . '">' . STORE_URL . '/pago.php?id=' . $identificador . '</a></p>
 
         <p style="text-align:center;"><strong>EQUIPO DE VENTAS</strong></p>
         <p style="text-align:center;">MI EMPRESA</p>

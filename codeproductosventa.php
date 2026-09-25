@@ -3,9 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require 'dbcon.php';
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 if (isset($_POST['delete'])) {
     $id = mysqli_real_escape_string($con, $_POST['delete']);
@@ -441,7 +438,14 @@ if (isset($_POST['saveTalla'])) {
         empty($_POST['talla']) ||
         !is_array($_POST['talla'])
     ) {
-        die('Datos incompletos');
+        error_log('saveTalla: datos incompletos del formulario');
+        $_SESSION['alert'] = [
+            'title'   => 'ERROR',
+            'message' => 'Los datos del formulario están incompletos',
+            'icon'    => 'error'
+        ];
+        header('Location: carga-tienda-en-linea.php');
+        exit;
     }
 
     $idProductoPrincipal = (int) $_POST['idproductoprincipal'];
@@ -619,6 +623,13 @@ if (isset($_POST['saveTalla'])) {
         exit;
     } catch (Exception $e) {
         $con->rollback();
-        die('Error: ' . $e->getMessage());
+        error_log('saveTalla: ' . $e->getMessage());
+        $_SESSION['alert'] = [
+            'title'   => 'ERROR',
+            'message' => 'No se pudo guardar el producto. Intenta de nuevo.',
+            'icon'    => 'error'
+        ];
+        header('Location: carga-tienda-en-linea.php');
+        exit;
     }
 }

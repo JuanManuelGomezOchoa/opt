@@ -2,13 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
-require 'vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+require_once __DIR__ . '/app/config/config.php';
 require 'dbcon.php';
 
 $alert = isset($_SESSION['alert']) ? $_SESSION['alert'] : null;
@@ -48,7 +42,14 @@ $stmt = $con->prepare("
 ");
 
 if (!$stmt) {
-    die($con->error);
+    error_log('pago.php: fallo al preparar el pedido: ' . $con->error);
+    $_SESSION['alert'] = [
+        'title'   => 'ERROR',
+        'message' => 'Ocurrió un error, inténtalo de nuevo',
+        'icon'    => 'error'
+    ];
+    header('Location: tienda-en-linea.php');
+    exit;
 }
 
 $stmt->bind_param('s', $_GET['id']);
@@ -89,7 +90,14 @@ $stmtVentas = $con->prepare("
 ");
 
 if (!$stmtVentas) {
-    die($con->error);
+    error_log('pago.php: fallo al preparar las ventas: ' . $con->error);
+    $_SESSION['alert'] = [
+        'title'   => 'ERROR',
+        'message' => 'Ocurrió un error, inténtalo de nuevo',
+        'icon'    => 'error'
+    ];
+    header('Location: tienda-en-linea.php');
+    exit;
 }
 
 $stmtVentas->bind_param('s', $pedido['identificador']);
@@ -136,14 +144,14 @@ while ($stmtVentas->fetch()) {
         src="https://openpay.s3.amazonaws.com/openpay-data.v1.min.js"></script>
 
     <script type="text/javascript">
-        const OPENPAY_ID = "mqlbnr1yz4lyaqkh2zxp";
-        const OPENPAY_PK = "pk_a6cb65876e604698adc927f2fc8aa2ec";
+        const OPENPAY_ID = "<?= htmlspecialchars(env('OPENPAY_MERCHANT_ID'), ENT_QUOTES, 'UTF-8'); ?>";
+        const OPENPAY_PK = "<?= htmlspecialchars(env('OPENPAY_PUBLIC_KEY'), ENT_QUOTES, 'UTF-8'); ?>";
 
         $(document).ready(function() {
 
             OpenPay.setId(OPENPAY_ID);
             OpenPay.setApiKey(OPENPAY_PK);
-            OpenPay.setSandboxMode(true);
+            OpenPay.setSandboxMode(<?= filter_var(env('OPENPAY_PRODUCTION_MODE', 'false'), FILTER_VALIDATE_BOOLEAN) ? 'false' : 'true'; ?>);
             var deviceSessionId = OpenPay.deviceData.setup("payment-form", "deviceIdHiddenFieldName");
 
             // Ajuste en el click del botón para no pedir token si es transferencia

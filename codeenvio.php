@@ -2,14 +2,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+require_once __DIR__ . '/app/config/config.php';
 require 'dbcon.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\PHPMailer.php';
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\SMTP.php';
-require 'C:\xampp\htdocs\servidores\vendor\phpmailer\phpmailer\src\Exception.php';
 
 if (isset($_POST['finalizar'])) {
 
@@ -28,7 +25,14 @@ if (isset($_POST['finalizar'])) {
         $resultPedido = mysqli_query($con, $queryPedido);
 
         if (!$resultPedido || mysqli_num_rows($resultPedido) === 0) {
-            throw new Exception('Pedido no encontrado');
+            error_log('codeenvio.php: pedido no encontrado: ' . $identificador);
+            $_SESSION['alert'] = [
+                'title'   => 'ERROR',
+                'message' => 'No se encontró el pedido',
+                'icon'    => 'error'
+            ];
+            header("Location: compras-aprobadas.php");
+            exit;
         }
 
         $pedido = mysqli_fetch_assoc($resultPedido);
@@ -49,27 +53,20 @@ if (isset($_POST['finalizar'])) {
         $total        = (float)$pedido['total'];
 
         // Configuracion SMTP
-        $host = 'smtp.gmail.com';
-        $port = 587;
-        $username = 'manuelgomezderiva00@gmail.com';
-        $password = 'svdnjsibsbwypuih';
-        $security = 'tls';
-
-
         $mail = new PHPMailer(true);
 
         $mail->isSMTP();
-        $mail->Host = $host;
-        $mail->Port = $port;
+        $mail->Host = env('SMTP_ADMIN_HOST');
+        $mail->Port = (int) env('SMTP_ADMIN_PORT');
         $mail->SMTPAuth = true;
-        $mail->Username = $username;
-        $mail->Password = $password;
-        $mail->SMTPSecure = $security;
+        $mail->Username = env('SMTP_ADMIN_USER');
+        $mail->Password = env('SMTP_ADMIN_PASS');
+        $mail->SMTPSecure = env('SMTP_ADMIN_SECURITY', 'tls');
         // $mail->SMTPDebug = 2;
         // $mail->Debugoutput = 'error_log';
 
 
-        $mail->setFrom('no-reply@dominio.mx', 'MI EMPRESA');
+        $mail->setFrom(env('SMTP_ADMIN_FROM_EMAIL'), env('SMTP_ADMIN_FROM_NAME'));
         // $mail->addReplyTo($email, $nombreuser);
         $mail->addAddress($email);
         $mail->Subject = 'PEDIDO' . ' ' . $identificador;
