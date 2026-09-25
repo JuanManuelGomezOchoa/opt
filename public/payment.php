@@ -119,19 +119,10 @@ while ($stmtVentas->fetch()) {
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/menu.css">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ico.ico" />
-    <title>Pago | Mi Emmpresa</title>
+<?php
+$pageTitle = 'Pago | Mi Empresa';
+include APP_PATH . '/app/screens/layout/head.php';
+?>
     <script type="text/javascript"
         src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script type="text/javascript"
@@ -179,25 +170,13 @@ while ($stmtVentas->fetch()) {
 
         });
     </script>
-</head>
-<style>
-    label {
-        margin-left: 0px;
-        margin-bottom: 10px;
-    }
 
-    body {
-        background-color: #ecf0f3;
-    }
-</style>
-
-<body>
     <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
 
     <div class="container-fluid bg-light">
         <div class="row mt-5 justify-content-center">
 
-            <div class=" col-11 col-md-4 mt-5 p-5 mb-5 order-2" style="background-color: #e7e7e7;border-radius:15px;">
+            <div class=" col-11 col-md-4 mt-5 p-5 mb-5 order-2 summary-card">
                 <h4>Resumen de tu compra</h4>
                 <p><b>ID Pedido:</b> <span class="small"><?= htmlspecialchars($pedido['identificador'], ENT_QUOTES, 'UTF-8'); ?></span></p>
 
@@ -262,7 +241,7 @@ while ($stmtVentas->fetch()) {
                         <?= $pedido['envioMonto'] > 0 ? '$' . number_format($pedido['envioMonto'], 2) : 'GRATIS'; ?>
                     </p>
 
-                    <p style="font-weight: 500;"><b>Total:</b>
+                    <p class="fw-medium"><b>Total:</b>
                         $<?= number_format($pedido['total'], 2); ?>
                     </p>
                 </div>
@@ -292,28 +271,28 @@ while ($stmtVentas->fetch()) {
                     <div class="containerTarjeta row">
                         <div class="col-12 mt-3">
                             <h4>Tarjetas débito / crédito</h4>
-                            <img src="cards1.png" alt="">
+                            <img src="cards1.png" alt="Tarjetas de débito y crédito aceptadas">
                         </div>
                         <div class="col-12 col-md-6 mt-3">
-                            <label>Nombre del titular</label>
-                            <input type="text" class="form-control" placeholder="Como aparece en la tarjeta" autocomplete="off" data-openpay-card="holder_name" minlength="10">
+                            <label for="cardHolder">Nombre del titular</label>
+                            <input type="text" class="form-control" id="cardHolder" placeholder="Como aparece en la tarjeta" autocomplete="off" data-openpay-card="holder_name" minlength="10">
                         </div>
 
                         <div class="col-12 col-md-6 mt-3">
-                            <label>Número de tarjeta</label>
-                            <input type="text" class="form-control" autocomplete="off" data-openpay-card="card_number" minlength="16" maxlength="16">
+                            <label for="cardNumber">Número de tarjeta</label>
+                            <input type="text" class="form-control" id="cardNumber" autocomplete="off" data-openpay-card="card_number" minlength="16" maxlength="16">
                         </div>
 
                         <div class="col-12 col-md-6 mt-3">
                             <div class="row">
-                                <div class="col-12"><label>Fecha de expiración</label></div>
+                                <div class="col-12"><label for="expMonth">Fecha de expiración</label></div>
                                 <div class="col-6">
-                                    <select id="expMonth" class="form-select" data-openpay-card="expiration_month">
+                                    <select id="expMonth" class="form-select" data-openpay-card="expiration_month" aria-label="Mes de expiración">
                                     </select>
                                 </div>
 
                                 <div class="col-6">
-                                    <select id="expYear" class="form-select" data-openpay-card="expiration_year">
+                                    <select id="expYear" class="form-select" data-openpay-card="expiration_year" aria-label="Año de expiración">
                                         <?php
                                         $anioActual = date('Y');
                                         $anioFinal  = $anioActual + 20;
@@ -332,33 +311,33 @@ while ($stmtVentas->fetch()) {
                         <div class="col-12 col-md-6 mt-3">
                             <div class="row">
                                 <div class="col-12">
-                                    <label>Código de seguridad</label>
+                                    <label for="cvv">Código de seguridad</label>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <input type="text" class="form-control" placeholder="CVV" autocomplete="off" data-openpay-card="cvv2" minlength="3" maxlength="4">
+                                    <input type="text" class="form-control" id="cvv" placeholder="CVV" autocomplete="off" data-openpay-card="cvv2" minlength="3" maxlength="4">
                                 </div>
-                                <div class="col-12 col-md-6 mt-3 mt-md-0"> <img src="cvv.png" alt=""></div>
+                                <div class="col-12 col-md-6 mt-3 mt-md-0"> <img src="cvv.png" alt="Código de seguridad de la tarjeta (CVV)"></div>
                             </div>
                         </div>
 
                     </div>
-                    <button type="button" class="btn btn-danger mt-4" id="pay-button">
+                    <button type="button" class="btn btn-primary mt-4" id="pay-button">
                         PAGAR $<?= number_format($pedido['total'], 2); ?>
                     </button>
 
                     <div class="col-12 col-md-6 mt-4">
                         <div class="row">
                             <div class="col-12 col-md-6">
-                                <p style="font-size: 10px;margin:0px;font-weight:500">Transacciones realizadas vía:</p>
-                                <img src="openpay.png" alt="">
+                                <p class="fine-print">Transacciones realizadas vía:</p>
+                                <img src="openpay.png" alt="Openpay">
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="row">
                                     <div class="col-3">
-                                        <img src="security.png" alt="">
+                                        <img src="security.png" alt="Pagos procesados de forma segura">
                                     </div>
                                     <div class="col">
-                                        <p style="font-size: 10px;font-weight:500">Tus pagos se realizan de forma segura con encriptación de 256 bits</p>
+                                        <p class="fine-print">Tus pagos se realizan de forma segura con encriptación de 256 bits</p>
                                     </div>
                                 </div>
                             </div>
@@ -366,18 +345,18 @@ while ($stmtVentas->fetch()) {
                     </div>
                 </form>
 
-                <div class="p-3 mt-3 row" style="background-color: #ebbc5d78;border:2px solid #b5790066;border-radius:10px;font-size:12px;">
+                <div class="notice-box notice-box-warning p-3 mt-3 row">
                     <div class="col-1">
-                        <i style="background-color: #b692133b;color: #393939ff;padding:5px 6px 5px 6px;border-radius:50px;" class="bi bi-headset"></i>
+                        <i class="notice-chip bi bi-headset"></i>
                     </div>
                     <div class="col">
-                        <p class="text-dark" style="margin:0;font-weight:400;">¿Necesitas ayuda?</p>
+                        <p class="text-dark mb-0">¿Necesitas ayuda?</p>
 
-                        <p class="text-dark" style="margin:0;">Dirección: Circuito Cobalto #189, Fracc. Cobalto Norte, Aguascalientes, Ags.</p>
+                        <p class="text-dark mb-0">Dirección: Circuito Cobalto #189, Fracc. Cobalto Norte, Aguascalientes, Ags.</p>
 
-                        <p class="text-dark" style="margin:0;">Tel: (449) 146 6072, (449) 973 6197, (449) 973 6681, (449) 965 7671</p>
+                        <p class="text-dark mb-0">Tel: (449) 146 6072, (449) 973 6197, (449) 973 6681, (449) 965 7671</p>
 
-                        <p class="text-dark" style="margin:0;">Email: ventas@fastpack.mx</p>
+                        <p class="text-dark mb-0">Email: ventas@fastpack.mx</p>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,154 @@
+/* ==========================================================================
+   variables.css — Tokens de diseño únicos para TODO el sitio
+   Fuente de verdad: paleta y tipografías que ya usaba el proyecto.
+   Carga SIEMPRE después de Bootstrap (o de sidenav.css en el panel).
+   ========================================================================== */
+
+:root {
+  /* ---- Colores de marca -------------------------------------------------- */
+  --color-primary: #dc3545;            /* Acento rojo de tienda, login y panel */
+  --color-primary-rgb: 220, 53, 69;
+  --color-primary-dark: #af3335;       /* Hover / rojo oscuro (af3335, c93434) */
+  --color-primary-soft: #fff8f8;       /* Fondo rojo suave (sub-card hover)    */
+
+  --color-success: #2f7a1a;            /* Verde éxito, contraste AA aplicado   */
+  --color-success-rgb: 47, 122, 26;
+  --color-success-soft: rgba(37, 108, 42, 0.18);   /* caja "envío gratis"      */
+  --color-success-border: rgba(51, 108, 37, 0.40);
+  --color-success-text: #1f5a10;
+
+  --color-warning: #ff9800;            /* Ámbar (badges / acciones)            */
+  --color-warning-soft: rgba(235, 188, 93, 0.47);  /* caja "pago Openpay"      */
+  --color-warning-border: rgba(181, 121, 0, 0.40);
+  --color-warning-text: #9a5b00;
+
+  --color-info-soft: rgba(37, 69, 108, 0.18);      /* caja "envío mínimo"      */
+  --color-info-border: rgba(37, 69, 108, 0.40);
+
+  /* ---- Grises y estructura ----------------------------------------------- */
+  --color-ink: #212529;                /* Texto principal (Bootstrap gray-900) */
+  --color-text: #444;                  /* Texto secundario (category_list)     */
+  --color-muted: #6c757d;              /* Texto y metadatos apagados (BS)      */
+  --color-border: #e0e0e0;             /* Bordes suaves (searchInput, dots)    */
+  --color-border-strong: #c6cacc;      /* Bordes marcados (table, toggler)     */
+  --color-border-soft: #e7e7e7;        /* Bordes claros (sub-card, btnregistro)*/
+  --color-bg-subtle: #f5f5f5;          /* Fondos neutros (card-contain, body)  */
+  --color-surface: #ffffff;
+  --color-footer-bg: #ecf0f3;          /* Fondo del pie de página              */
+  --color-header-bg: #222222;          /* Cabeceras de tarjeta del panel       */
+  --color-glass: #ffffffa9;            /* Navbar translúcida                   */
+
+  /* Slates: azules que no encajan en los tokens semánticos; se agrupan acá */
+  --color-slate: #213443;              /* Botón flotante, títulos de panel     */
+  --color-slate-soft: #457184;         /* Slider de banners                    */
+  /* Nota: #2c3b5c y #1e375c del login oscuro quedan SIN USO (tema claro).    */
+
+  /* ---- Tipografía ---------------------------------------------------------- */
+  --font-sans: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Poppins", var(--font-sans); /* Solo wordmark del logo       */
+
+  /* ---- Espacio, radio y sombras -------------------------------------------- */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 3rem;
+
+  /* Altura del navbar fijo de la tienda (85px en desktop y móvil).
+     body.has-navbar lo compensa en un solo lugar (styles.css).       */
+  --navbar-height: 5.3125rem;
+
+  /* ---- Tarjeta de producto: tamaños (ajuste visual 3) --------------------- */
+  --card-title-fs: 0.95rem;            /* Título de la card                    */
+  --card-meta-fs: 0.85rem;             /* Subtítulo / precios                  */
+  --card-padding: 0.75rem;             /* Padding interno de la card           */
+  --card-max-width: 18rem;             /* Ancho máximo de una card             */
+  --product-img-height: 11rem;         /* Alto de imagen (escritorio ~176px)   */
+  --product-img-height-sm: 9rem;       /* Alto de imagen (≤576px)              */
+  --cart-thumb-height: 6rem;           /* Miniatura del carrito (columna der.) */
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-pill: 50px;
+
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 0.375rem 1rem rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   Sobreescrituras de tokens de Bootstrap 5 (afectan a CDN 5.2 y sidenav 5.1)
+   -------------------------------------------------------------------------- */
+:root {
+  --bs-primary: var(--color-primary);
+  --bs-primary-rgb: var(--color-primary-rgb);
+  --bs-primary-bg-subtle: var(--color-primary-soft);
+  --bs-body-color: var(--color-ink);
+  --bs-body-bg: var(--color-surface);
+  --bs-border-color: var(--color-border);
+  --bs-font-sans-serif: var(--font-sans);
+  --bs-link-color: var(--color-primary);
+  --bs-link-color-rgb: var(--color-primary-rgb);
+  --bs-link-hover-color: var(--color-primary-dark);
+  --bs-link-hover-color-rgb: 175, 51, 53;
+  --bs-success: var(--color-success);
+  --bs-success-rgb: var(--color-success-rgb);
+}
+
+/* ---- Estado de acción principal: .btn-primary en rojo de marca ----
+   Cubre Bootstrap 5.2 (usa --bs-btn-*) y 5.1/compilado (propiedades directas,
+   como en sidenav.css), sin tocar el archivo compilado.                       */
+.btn-primary {
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-bg: var(--color-primary-dark);
+  --bs-btn-hover-border-color: var(--color-primary-dark);
+  --bs-btn-active-bg: var(--color-primary-dark);
+  --bs-btn-active-border-color: var(--color-primary-dark);
+  --bs-btn-disabled-bg: var(--color-primary);
+  --bs-btn-disabled-border-color: var(--color-primary);
+  --bs-btn-focus-shadow-rgb: var(--color-primary-rgb);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary.show {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: var(--color-surface);
+}
+
+.btn-primary:focus-visible,
+.btn-primary:focus {
+  box-shadow: 0 0 0 0.25rem rgba(var(--color-primary-rgb), 0.25);
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  color: var(--color-surface);
+}
+
+/* El rojo nativo de .btn-danger coincide con la marca: se mantiene como
+   sinónimo de riesgo; las acciones destructivas deben usar .btn-outline-danger. */
+
+/* ---- SweetAlert2: confirmación siempre en rojo de marca ----
+   (gana a los confirmButtonColor inline del JS)                             */
+.swal2-confirm.swal2-styled {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.swal2-confirm.swal2-styled:hover {
+  background-color: var(--color-primary-dark) !important;
+  border-color: var(--color-primary-dark) !important;
+}
+
+/* ---- Fondo de base y tipografía global ------------------------------------- */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-ink);
+}

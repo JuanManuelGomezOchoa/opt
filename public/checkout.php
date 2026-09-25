@@ -25,19 +25,12 @@ if (!empty($alert)) {
     unset($_SESSION['alert']);
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/menu.css">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ico.ico" />
+<?php
+$pageTitle = 'Datos de envío | Mi Empresa';
+$extraCss = '
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">';
+include APP_PATH . '/app/screens/layout/head.php';
+?>
     <script src="https://maps.googleapis.com/maps/api/js?key=<?= htmlspecialchars(env('GOOGLE_MAPS_API_KEY'), ENT_QUOTES, 'UTF-8'); ?>&libraries=places&callback=initMap" async></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -122,10 +115,6 @@ if (!empty($alert)) {
             validarFormulario();
         }
     </script>
-    <title>Envío | Mi Empresa</title>
-</head>
-
-<body>
     <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
 
     <div class="container-fluid">
@@ -179,7 +168,7 @@ if (!empty($alert)) {
                     </div>
 
                     <div class="col-12 col-md-8 form-floating mb-3">
-                        <input type="text" class="form-control" name="calle" placeholder="Calle" autocomplete="off" required maxlength="50">
+                        <input type="text" class="form-control" name="calle" id="calle" placeholder="Calle" autocomplete="off" required maxlength="50">
                         <label for="calle">Calle</label>
                         <div class="invalid-feedback">
                             Este campo es obligatorio
@@ -187,7 +176,7 @@ if (!empty($alert)) {
                     </div>
 
                     <div class="col-12 col-md-4 form-floating mb-3">
-                        <input type="text" class="form-control" name="exterior" placeholder="Exterior" autocomplete="off" required maxlength="10">
+                        <input type="text" class="form-control" name="exterior" id="exterior" placeholder="Exterior" autocomplete="off" required maxlength="10">
                         <label for="exterior">Número exterior</label>
                         <div class="invalid-feedback">
                             Este campo es obligatorio
@@ -195,25 +184,25 @@ if (!empty($alert)) {
                     </div>
 
                     <div class="col-12 col-md-4 form-floating mb-3">
-                        <input type="text" class="form-control" name="interior" placeholder="Interior" autocomplete="off" maxlength="10">
+                        <input type="text" class="form-control" name="interior" id="interior" placeholder="Interior" autocomplete="off" maxlength="10">
                         <label for="interior">Número interior</label>
                     </div>
                     <div class="col-12 col-md-8 form-floating mb-3">
-                        <input type="text" class="form-control" name="colonia" placeholder="Colonia" autocomplete="off" required maxlength="50">
+                        <input type="text" class="form-control" name="colonia" id="colonia" placeholder="Colonia" autocomplete="off" required maxlength="50">
                         <label for="colonia">Colonia / Fraccionamiento</label>
                         <div class="invalid-feedback">
                             Este campo es obligatorio
                         </div>
                     </div>
                     <div class="col-12 col-md-6 form-floating mb-3">
-                        <input type="text" class="form-control" name="ciudad" placeholder="Ciudad" autocomplete="off" required maxlength="50">
+                        <input type="text" class="form-control" name="ciudad" id="ciudad" placeholder="Ciudad" autocomplete="off" required maxlength="50">
                         <label for="ciudad">Ciudad / Municipio</label>
                         <div class="invalid-feedback">
                             Este campo es obligatorio
                         </div>
                     </div>
                     <div class="col-12 col-md-6 form-floating mb-3">
-                        <input type="text" class="form-control" name="estado" placeholder="Estado" autocomplete="off" required maxlength="50">
+                        <input type="text" class="form-control" name="estado" id="estado" placeholder="Estado" autocomplete="off" required maxlength="50">
                         <label for="estado">Estado</label>
                         <div class="invalid-feedback">
                             Este campo es obligatorio
@@ -227,14 +216,14 @@ if (!empty($alert)) {
                         </div>
                     </div>
                     <div class="col-12 col-md-5 form-floating mb-3">
-                        <input type="text" class="form-control" name="pais" placeholder="Pais" autocomplete="off" required maxlength="50">
+                        <input type="text" class="form-control" name="pais" id="pais" placeholder="Pais" autocomplete="off" required maxlength="50">
                         <label for="web">País</label>
                         <div class="invalid-feedback">
                             Este campo es obligatorio
                         </div>
                     </div>
 
-                    <div class="col-12"><button class="btn btn-danger w-100" id="btnGuardar" name="save" type="submit" disabled>Ir a pagar</button></div>
+                    <div class="col-12"><button class="btn btn-primary w-100" id="btnGuardar" name="save" type="submit" disabled>Ir a pagar</button></div>
                 </form>
             </div>
         </div>

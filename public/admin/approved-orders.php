@@ -50,23 +50,15 @@ if (isset($_SESSION['username'])) {
     exit();
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$pageTitle = 'Compras aprobadas | Fastpack';
+$layout = 'panel';
+$bodyClass = 'sb-nav-fixed';
+$extraCss = '
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">';
+include APP_PATH . '/app/screens/layout/head.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ics.ico">
-    <title>Compras aprobadas | Fastpack</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
-    <link rel="shortcut icon" href="<?= BASE_URL ?>/assets/images/ico.ico" type="image/x-icon">
-</head>
-
-<body class="sb-nav-fixed">
     <?php include APP_PATH . '/app/screens/panel/sidenav.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
@@ -75,10 +67,11 @@ if (isset($_SESSION['username'])) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4 style="color:#fff" class="m-1">COMPRAS APROBADAS</h4>
+                                <h4 class="m-1">COMPRAS APROBADAS</h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                                <div class="table-responsive">
+                                <table id="miTabla" class="table table-bordered table-striped w-100">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -122,7 +115,7 @@ if (isset($_SESSION['username'])) {
                                                         <p>
                                                             <?php
                                                             if ($registro['status_pago'] === 'pagado') {
-                                                                echo "<span class='bg-success text-light p-1' style='border-radius:10px'>Pagado</span>";
+                                                                echo "<span class='bg-success text-light p-1 rounded-1'>Pagado</span>";
                                                             } else if ($registro['status_pago'] === 'Pendiente SPEI') {
                                                                 echo "<span>Pendiente SPEI</span>";
                                                             } else {
@@ -144,7 +137,7 @@ if (isset($_SESSION['username'])) {
                                                     </td>
                                                     <td>
                                                         <button
-                                                            class="btn btn-info btn-sm ver-detalle m-1"
+                                                            class="btn btn-outline-secondary btn-sm ver-detalle m-1"
                                                             data-id="<?= $identificador ?>"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#detalleModal">
@@ -155,14 +148,14 @@ if (isset($_SESSION['username'])) {
                                                         if ($registro['status_pago'] === 'pagado') {
                                                         ?>
                                                             <button
-                                                                class="btn btn-success btn-sm finalizar-envio m-1"
+                                                                class="btn btn-primary btn-sm finalizar-envio m-1"
                                                                 data-id="<?= $identificador ?>"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#finalizarModal">
                                                                 <i class="bi bi-check2"></i>
                                                             </button>
 
-                                                            <a class="btn btn-sm btn-warning m-1" style="text-decoration: none;" href="generar-comprobante.php?id=<?= $identificador ?>"><i class="bi bi-download"></i></a>
+                                                            <a class="btn btn-sm btn-outline-secondary text-decoration-none m-1" href="generar-comprobante.php?id=<?= $identificador ?>"><i class="bi bi-download"></i></a>
 
                                                         <?php
                                                         }
@@ -174,7 +167,7 @@ if (isset($_SESSION['username'])) {
                                                         <?php
                                                         if ($registro['status_pago'] === 'Pendiente SPEI') {
                                                         ?>
-                                                            <a class="btn btn-sm btn-secondary m-1" style="text-decoration: none;" href="spei-respuesta.php?id=<?= $registro['openpay_id']; ?>"><i class="bi bi-arrow-repeat"></i></a>
+                                                            <a class="btn btn-sm btn-secondary text-decoration-none m-1" href="spei-respuesta.php?id=<?= $registro['openpay_id']; ?>"><i class="bi bi-arrow-repeat"></i></a>
                                                         <?php
                                                         }
                                                         ?>
@@ -189,6 +182,7 @@ if (isset($_SESSION['username'])) {
                                         ?>
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -211,12 +205,12 @@ if (isset($_SESSION['username'])) {
                         <!-- Identificador visible -->
                         <div class="form-floating mb-3">
                             <input class="form-control" type="text" name="identificador" id="ordenVisible" readonly>
-                            <label style="margin-left: 0px;">Orden ID</label>
+                            <label>Orden ID</label>
                         </div>
 
                         <div class="form-floating mb-3">
                             <input class="form-control" type="text" name="guia" placeholder="URL">
-                            <label style="margin-left: 0px;">URL para rastreo</label>
+                            <label>URL para rastreo</label>
                         </div>
 
                         <p class="small">

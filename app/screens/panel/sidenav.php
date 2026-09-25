@@ -2,18 +2,19 @@
 require_once __DIR__ . '/../../includes/bootstrap.php';
 $username = $_SESSION['username'];
 ?>
-<link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/sidenav.css">
 <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
 
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="#"><img style="width: 180px;" src="<?= BASE_URL ?>/assets/images/logo.png" alt=""></a>
+    <a class="navbar-brand ps-3" href="<?= BASE_URL ?>/admin/users.php">
+        <?php include APP_PATH . '/app/screens/layout/logo.php'; ?>
+    </a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
 
     <!-- Espacio entre el logo y el botón de salir -->
     <div class="d-flex justify-content-end w-100">
-        <a style="margin-right: 15px;" class="btn btn-warning" href="<?= BASE_URL ?>/logout.php">Salir <i class="bi bi-box-arrow-right"></i></a>
+        <a class="btn btn-outline-light btn-sm btn-salir" href="<?= BASE_URL ?>/logout.php">Salir <i class="bi bi-box-arrow-right"></i></a>
     </div>
 </nav>
 

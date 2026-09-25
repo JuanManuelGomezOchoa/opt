@@ -14,31 +14,22 @@ $com = $consultaComision->fetch_assoc();
 $comisionValor = str_replace('%', '', $com['valoruno']); // Quitamos el % si existe
 $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
 ?>
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$pageTitle = 'Carrito de compras | Mi Empresa';
+$extraCss = '
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">';
+include APP_PATH . '/app/screens/layout/head.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ics.ico">
-    <title>Carrito de compras | Mi Empresa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
-    <link rel="shortcut icon" href="<?= BASE_URL ?>/assets/images/ico.ico" type="image/x-icon">
-</head>
-
-<body style="background-color: #f5f5f5;">
     <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
     <div class="container-fluid">
-        <div class="row mb-5 mt-5 justify-content-evenly" style="margin-top: 100px !important;padding:0px 10px;">
+        <div class="row mb-5 mt-5 justify-content-evenly page-row-top">
 
             <div class="col-12 col-md-6 p-4">
                 <h2>CARRITO DE COMPRAS</h2>
                 <p><b>Resumen de compra</b></p>
                 <p>Total de productos: <span id="totalProductos">0</span></p>
+                <div class="table-responsive">
                 <table class="table table-cart">
                     <thead>
                         <tr>
@@ -49,33 +40,33 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
                     </thead>
                     <tbody id="detalleCompra"></tbody>
                 </table>
+                </div>
                 <p>Subtotal: <span id="subtotal">$ 0.00</span></p>
-                <p id="row-descuento">Descuento: <span style="color: #389521ff;" id="descuento">$ 0.00</span></p>
-                <p id="row-cupon">Cupón: <span style="color: #389521ff;" id="cupon">$ 0.00</span></p>
+                <p id="row-descuento">Descuento: <span class="text-success" id="descuento">$ 0.00</span></p>
+                <p id="row-cupon">Cupón: <span class="text-success" id="cupon">$ 0.00</span></p>
                 <p id="enviop">Costo de envío: <span id="envio">$ 0.00</span></p>
-                <p style="font-weight: 500;">Total a pagar: <span style="font-weight: 500;" id="totalPagar">$ 0.00</span></p>
+                <p class="fw-medium">Total a pagar: <span class="fw-medium" id="totalPagar">$ 0.00</span></p>
 
 
                 <!-- <button class="btn btn-secondary w-100 mt-5" disabled>Guardar carrito de compras</button> -->
-                <a class="btn btn-danger w-100 mt-4 disabled" id="next" href="<?= BASE_URL ?>/checkout.php">Continuar</a>
+                <a class="btn btn-primary w-100 mt-4 disabled" id="next" href="<?= BASE_URL ?>/checkout.php">Continuar</a>
 
-                <div class="mt-3">Tengo un cupón:
+                <div class="mt-3"><label for="codigoCupon">Tengo un cupón:</label>
                     <div class="d-flex mt-1">
                         <input class="form-control ms-2" type="text" id="codigoCupon">
-                        <button style="border-radius: 0px 10px 10px 0px;"
-                            class="btn btn-secondary" id="canje">Canjear</button>
+                        <button class="btn btn-secondary btn-radius-right" id="canje">Canjear</button>
                     </div>
                 </div>
 
 
-                <div class="p-3 mt-3" id="envioCosto" style="background-color: #25456c2d;border:2px solid #25456c66;border-radius:10px">
-                    <p class="text-dark" style="margin:0;"><small><i style="background-color: #25456c3b;color: #393939ff;padding:5px 5px 5px 10px;border-radius:50px;" class="bi bi-truck"></i> Para <b>envíos gratis</b> se requiere un <b>minimo de compra</b> de <b>$<?= number_format($envioMinimo) ?></b>.</small></p>
+                <div class="notice-box notice-box-notice p-3 mt-3" id="envioCosto">
+                    <p><small><i class="notice-chip bi bi-truck"></i> Para <b>envíos gratis</b> se requiere un <b>minimo de compra</b> de <b>$<?= number_format($envioMinimo) ?></b>.</small></p>
                 </div>
-                <div class="p-3 mt-3" id="envioGratis" style="background-color: #256c2a2d;border:2px solid #336c2566;border-radius:10px">
-                    <p class="text-dark" style="margin:0;"><small><i style="background-color: #256c273b;color: #393939ff;padding:5px 5px 5px 10px;border-radius:50px;" class="bi bi-truck"></i> El <b>envío</b> de tus productos es <b>gratis</b>.</small></p>
+                <div class="notice-box notice-box-success p-3 mt-3" id="envioGratis">
+                    <p><small><i class="notice-chip bi bi-truck"></i> El <b>envío</b> de tus productos es <b>gratis</b>.</small></p>
                 </div>
-                <div class="p-3 mt-3" style="background-color: #ebbc5d78;border:2px solid #b5790066;border-radius:10px">
-                    <p class="text-dark" style="margin:0;"><small><i style="background-color: #b692133b;color: #393939ff;padding:5px 5px 5px 10px;border-radius:50px;" class="bi bi-cash-coin"></i> El <b>pago es procesado</b> mediante <b>Openpay por BBVA</b> dentro de nuestro sitio web con maximos estandares de <b>seguridad y tecnología antifraude</b>.</small></p>
+                <div class="notice-box notice-box-warning p-3 mt-3">
+                    <p><small><i class="notice-chip bi bi-cash-coin"></i> El <b>pago es procesado</b> mediante <b>Openpay por BBVA</b> dentro de nuestro sitio web con maximos estandares de <b>seguridad y tecnología antifraude</b>.</small></p>
                 </div>
             </div>
             <div class=" col-12 col-md-4 card-contain">
@@ -196,7 +187,7 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
 
                 // El descuento solo se muestra si NO es mayoreo y es mayor a 0
                 let htmlDescuento = (descuentoAplicable > 0) ?
-                    `<br>Desc: <span style="color:#389521ff">-$ ${descuentoAplicable.toFixed(2)}</span>` :
+                    `<br>Desc: <span class="text-success">-$ ${descuentoAplicable.toFixed(2)}</span>` :
                     "";
 
                 elPrice.innerHTML = `Precio unit: $ ${precioConComision.toFixed(2)} ${badgeMayoreo} ${htmlDescuento}`;
@@ -258,14 +249,14 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
             if (descuentoVal === 0) {
                 descuentoSpan.style.color = "black";
             } else {
-                descuentoSpan.style.color = "#389521ff";
+                descuentoSpan.style.color = "var(--color-success)";
             }
 
             // Color cupón
             if (cuponVal === 0) {
                 cuponSpan.style.color = "black";
             } else {
-                cuponSpan.style.color = "#389521ff";
+                cuponSpan.style.color = "var(--color-success)";
             }
         }
 
@@ -289,7 +280,7 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
 
             if (ids.length === 0) {
                 document.getElementById("productList").innerHTML = `
-        <div style='min-height: 70vh; display: flex; justify-content: center; align-items: center; text-align: center;'>
+        <div class="empty-state">
             <div><p>No tienes productos en el carrito</p>
             <a href='<?= BASE_URL ?>/index.php' class='btn btn-secondary'>Tienda en línea</a></div>
         </div>`;
@@ -338,9 +329,9 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
     <div class="card" style="width: 100%;">
         <div class="row g-0">
             <div class="col-5 col-md-4">
-                <div style="height: 160px; overflow: hidden;">
+                <div style="height: var(--cart-thumb-height); overflow: hidden;">
                     <a href="<?= BASE_URL ?>/product.php?id=${prod.productoID}">
-                        <img src="${prod.primer_medio || '<?= BASE_URL ?>/assets/images/ico.ico'}" class="img-fluid rounded-start" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="${prod.primer_medio || '<?= BASE_URL ?>/assets/images/placeholder.svg'}" class="img-fluid rounded-start${prod.primer_medio ? '' : ' placeholder-img'}" style="width: 100%; height: 100%; object-fit: cover;" alt="${prod.titulo}">
                     </a>
                 </div>
             </div>

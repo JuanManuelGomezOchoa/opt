@@ -50,23 +50,15 @@ if (isset($_SESSION['username'])) {
     exit();
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
+<?php
+$pageTitle = 'Carga tienda en línea | Mi empresa';
+$layout = 'panel';
+$bodyClass = 'sb-nav-fixed';
+$extraCss = '
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">';
+include APP_PATH . '/app/screens/layout/head.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ics.ico">
-    <title>Carga tienda en línea | Mi empresa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
-    <link rel="shortcut icon" href="<?= BASE_URL ?>/assets/images/ico.ico" type="image/x-icon">
-</head>
-
-<body class="sb-nav-fixed">
     <?php include APP_PATH . '/app/screens/panel/sidenav.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
@@ -75,7 +67,7 @@ if (isset($_SESSION['username'])) {
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4 style="color:#fff" class="m-1">TIENDA EN LÍNEA <small>(PRODUCTOS ACTIVOS)</small>
+                                <h4 class="m-1">TIENDA EN LÍNEA <small>(PRODUCTOS ACTIVOS)</small>
                                     <button type="button" class="btn btn-primary btn-sm float-end btn-sm m-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         Nuevo producto
                                     </button>
@@ -86,7 +78,8 @@ if (isset($_SESSION['username'])) {
                                 </h4>
                             </div>
                             <div class="card-body" style="overflow-y:scroll;">
-                                <table id="miTabla" class="table table-bordered table-striped" style="width: 100%;">
+                                <div class="table-responsive">
+                                <table id="miTabla" class="table table-bordered table-striped w-100">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -138,12 +131,12 @@ if (isset($_SESSION['username'])) {
                                                         <p><?= $registro['talla']; ?></p>
                                                     </td>
                                                     <td>
-                                                        <a href="editarproductoventa.php?id=<?= $registro['id']; ?>" class="btn btn-warning btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
+                                                        <a href="editarproductoventa.php?id=<?= $registro['id']; ?>" class="btn btn-outline-secondary btn-sm m-1"><i class="bi bi-pencil-square"></i></a>
 
                                                         <a href="duplicar-producto-venta.php?id=<?= $registro['id']; ?>" class="btn btn-secondary btn-sm m-1"><i class="bi bi-copy"></i></a>
 
                                                         <form action="<?= BASE_URL ?>/actions/products.php" method="POST" class="d-inline">
-                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
+                                                            <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-outline-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                         </form>
                                                     </td>
                                                 </tr>
@@ -156,6 +149,7 @@ if (isset($_SESSION['username'])) {
 
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -180,12 +174,12 @@ if (isset($_SESSION['username'])) {
                         </div>
 
                         <div class="col-12 col-md-12 form-floating mb-3">
-                            <textarea class="form-control" name="subtitulo" id="subtitulo" placeholder="Subtitulo" required style="min-height: 100px;"></textarea>
+                            <textarea class="form-control form-min-h-100" name="subtitulo" id="subtitulo" placeholder="Subtitulo" required></textarea>
                             <label for="subtitulo">Subtítulo</label>
                         </div>
 
                         <div class="col-12 col-md-12 form-floating mb-3">
-                            <textarea class="form-control" name="detalles" id="detalles" placeholder="Detalles" required style="min-height: 150px;"></textarea>
+                            <textarea class="form-control form-min-h-150" name="detalles" id="detalles" placeholder="Detalles" required></textarea>
                             <label for="detalles">Detalles</label>
                         </div>
 

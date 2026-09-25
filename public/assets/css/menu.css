@@ -1,16 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
 .navbar {
-  height: 85px;
+  height: 5.3125rem;
   z-index: 999999 !important;
   transition: 0.4s ease-out;
-  backdrop-filter: blur(5px);
-  background-color: #ffffffa9;
+  backdrop-filter: blur(0.3125rem);
+  background-color: var(--color-glass);
 }
 
 .navbar.scrolled {
-  height: 80px;
-  backdrop-filter: blur(10px);
+  height: 5rem;
+  backdrop-filter: blur(0.625rem);
 }
 
 .offcanvas-body {
@@ -19,14 +17,19 @@
 
 .navbar-nav a {
   font-family: "Poppins", sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 300;
-  color: #000000;
-  margin: 0px 9px;
+  color: var(--color-ink);
+  text-decoration: none;
+  margin: 0 0.5625rem;
+}
+
+.containernav {
+  margin: 0 2.8125rem;
 }
 
 .logomenu {
-  width: 330px;
+  width: 20.625rem;
 }
 
 .menucanvass p, .menucanvass hr{
@@ -36,28 +39,28 @@
 @media screen and (max-width: 1000px) {
 
   .navbar {
-    padding-top: 0px !important;
+    padding-top: 0 !important;
   }
   .navbar-toggler{
-    border-radius: 150px;
-    background: linear-gradient(145deg, #ffffff, #ffffff);
-    box-shadow: 15px 15px 30px #c6cacc,
-      -15px -15px 30px #ffffff;
-    padding: 12px 12px;
+    border-radius: 9.375rem;
+    background: linear-gradient(145deg, var(--color-surface), var(--color-surface));
+    box-shadow: 15px 15px 30px var(--color-border-strong),
+      -15px -15px 30px var(--color-surface);
+    padding: 0.75rem 0.75rem;
     border: 1px solid rgb(255, 255, 255);
   }
   .btn-close {
-    border-radius: 150px;
-    box-shadow: 15px 15px 30px #c6cacc,
-      -15px -15px 30px #ffffff;
-    padding: 12px 12px;
+    border-radius: 9.375rem;
+    box-shadow: 15px 15px 30px var(--color-border-strong),
+      -15px -15px 30px var(--color-surface);
+    padding: 0.75rem 0.75rem;
     border: 1px solid rgb(255, 255, 255);
   }
   .navbar-toggler:focus {
     box-shadow: none !important;
   }
   .containernav {
-    margin: 0px 15px !important;
+    margin: 0 0.9375rem !important;
   }
 
   .offcanvas {
@@ -65,15 +68,15 @@
   }
 
   .offcanvas-body a {
-    color: #222222 !important;
+    color: var(--color-header-bg) !important;
   }
 
   .btnregistro {
-    background-color: #e7e7e7;
+    background-color: var(--color-border-soft);
   }
 
   .logomenu {
-    width: 150px;
+    width: 9.375rem;
   }
 
   .navbar-toggler-icon {
@@ -82,11 +85,11 @@
   }
 
   .offcanvas-header{
-    padding-bottom: 0px;
+    padding-bottom: 0;
   }
 
   .menucanvass{
-    padding: 0px 20px 10px 20px !important;
+    padding: 0 1.25rem 0.625rem 1.25rem !important;
   }
 
   .menucanvass p, .menucanvass hr{
@@ -94,7 +97,7 @@
   }
 
   .menucanvass a{
-    padding: 10px 0px !important;
+    padding: 0.625rem 0 !important;
     font-weight: 400 !important;
   }
 

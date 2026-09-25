@@ -4,36 +4,20 @@ require_once __DIR__ . '/../app/includes/bootstrap.php';
 header("Content-Type: text/html; charset=UTF-8");
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <!-- Google Tag Manager -->
-
-    <!-- End Google Tag Manager -->
-    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ics.ico">
-    <title>Tienda en línea | Mi Empresa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<?php
+$pageTitle = 'Tienda en línea | Mi Empresa';
+$extraCss = '
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/slickslider.css">
-    <link rel="shortcut icon" href="<?= BASE_URL ?>/assets/images/ico.ico" type="image/x-icon">
-</head>
-<style>
+    <link rel="stylesheet" href="' . BASE_URL . '/assets/css/slickslider.css">';
+include APP_PATH . '/app/screens/layout/head.php';
+?>
 
-</style>
-
-<body style="background-color: #f5f5f5;">
     <!-- Google Tag Manager (noscript) -->
     <!-- End Google Tag Manager (noscript) -->
     <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
     <div class="container-fluid">
-        <div class="row mb-5 mt-5 justify-content-start" style="margin-top: 100px !important;padding:0px 10px;">
+        <div class="row mb-5 mt-5 justify-content-center g-2 g-lg-3 page-row-top">
             <?php
             $query_promo = "SELECT * FROM promociones WHERE estatus = 1 ORDER BY id DESC";
             $query_run_promo = mysqli_query($con, $query_promo);
@@ -44,7 +28,7 @@ header("Content-Type: text/html; charset=UTF-8");
                     <div class="slickcard">
                         <?php foreach ($query_run_promo as $registro_promo): ?>
                             <div class="slickimg" data-aos="zoom-in">
-                                <a style="width: 100%;" href="<?= $registro_promo['url']; ?>">
+                                <a class="w-100" href="<?= $registro_promo['url']; ?>">
                                     <img src="<?= $registro_promo['medio']; ?>" alt="promo">
                                 </a>
                             </div>
@@ -59,7 +43,7 @@ header("Content-Type: text/html; charset=UTF-8");
 
                 <div class="form-floating mt-1 mb-3">
                     <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar producto...">
-                    <label style="padding-left: 0px;" for="floatingInput">Buscar...</label>
+                    <label for="floatingInput">Buscar...</label>
                 </div>
 
                 <!-- Filtros de Industrias -->
@@ -81,7 +65,7 @@ header("Content-Type: text/html; charset=UTF-8");
                 <?php
                     }
                 } else {
-                    echo "<div style='min-height:70vh;text-align:center;'><p>No se encontró ninguna industria</p></div>";
+                    echo "<div class='empty-state'><p>No se encontró ninguna industria</p></div>";
                 }
                 ?>
 
@@ -100,7 +84,7 @@ header("Content-Type: text/html; charset=UTF-8");
                 <?php
                     }
                 } else {
-                    echo "<div style='min-height:70vh;text-align:center;'><p>No se encontró ninguna categoría</p></div>";
+                    echo "<div class='empty-state'><p>No se encontró ninguna categoría</p></div>";
                 }
                 ?>
 
@@ -146,7 +130,7 @@ header("Content-Type: text/html; charset=UTF-8");
                             // Precio original tachado: Unitario * (1 + Comision)
                             $precio_original_con_comision = $registro['preciounitario'] * (1 + $comision_porcentaje);
                     ?>
-                            <div class="col-6 col-md-3 product-item d-flex"
+                            <div class="col-6 col-md-4 col-lg-3 product-item d-flex"
                                 data-unitario="<?= $registro['preciounitario']; ?>"
                                 data-mayoreo="<?= $registro['preciomayoreo']; ?>"
                                 data-minmayoreo="<?= $registro['cantidadmayoreo']; ?>"
@@ -157,31 +141,32 @@ header("Content-Type: text/html; charset=UTF-8");
                                 data-category="<?= htmlspecialchars($registro['categorias'], ENT_QUOTES, 'UTF-8'); ?>"
                                 data-subcategory="<?= htmlspecialchars($registro['subcategorias'], ENT_QUOTES, 'UTF-8'); ?>">
 
-                                <div class="card img-card-container" style="width: 100%;">
-                                    <a style="text-decoration: none; color: #000;" href="<?= BASE_URL ?>/product.php?id=<?= $registro['productoID']; ?>">
+                                <div class="card img-card-container product-card">
+                                    <a class="product-link" href="<?= BASE_URL ?>/product.php?id=<?= $registro['productoID']; ?>">
                                         <?php if ($registro['primer_medio']) { ?>
-                                            <img src="<?= $registro['primer_medio']; ?>" class="card-img-top" style="object-fit: contain;" alt="...">
+                                            <img src="<?= $registro['primer_medio']; ?>" class="card-img-top" alt="Imagen del producto <?= htmlspecialchars($registro['titulo'], ENT_QUOTES, 'UTF-8'); ?>">
                                         <?php } else { ?>
-                                            <img src="<?= BASE_URL ?>/assets/images/ico.ico" class="card-img-top" alt="Default Image">
+                                            <img src="<?= BASE_URL ?>/assets/images/placeholder.svg" class="card-img-top placeholder-img" alt="Imagen no disponible">
                                         <?php } ?>
-                                        <div class="card-body" style="padding-bottom: 0px !important;">
+                                        <div class="card-body">
                                             <div>
-                                                <h5 style="text-transform: uppercase; font-weight: 400;" class="card-title"><?= htmlspecialchars($registro['titulo'], ENT_QUOTES, 'UTF-8'); ?></h5>
-                                                <p style="margin-bottom: 0px;" class="card-text"><?= htmlspecialchars($registro['subtitulo'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                                <h5 class="card-title product-title"><?= htmlspecialchars($registro['titulo'], ENT_QUOTES, 'UTF-8'); ?></h5>
+                                                <p class="card-text mb-0"><?= htmlspecialchars($registro['subtitulo'], ENT_QUOTES, 'UTF-8'); ?></p>
                                             </div>
-                                            <p style="margin-bottom: 0px !important; font-size: 15px; font-weight: 600;">
+                                            <p class="product-price-line">
                                                 <span id="price-display-<?= $registro['productoID']; ?>">
                                                     $<?= number_format($precio_final_con_comision, 2); ?>
                                                 </span>
 
                                                 <span id="old-price-display-<?= $registro['productoID']; ?>"
-                                                    style="color: #39ad19ff; text-decoration: line-through; font-size: 13px; margin-left: 10px; 
-      <?php
-                            // Solo mostrar si tiene descuento real > 0
-                            // No mostramos mayoreo aquí porque eso solo se sabe cuando el usuario elige cantidad
-                            if (!((float)$registro['descuento'] > 0)) {
-                                echo 'display:none;';
-                            }
+                                                    class="product-old-price"
+                                                    style="
+        <?php
+                        // Solo mostrar si tiene descuento real > 0
+                        // No mostramos mayoreo aquí porque eso solo se sabe cuando el usuario elige cantidad
+                        if (!((float)$registro['descuento'] > 0)) {
+                            echo 'display:none;';
+                        }
         ?>">
                                                     <b>$<?= number_format($precio_original_con_comision, 2); ?></b>
                                                 </span>
@@ -194,16 +179,16 @@ header("Content-Type: text/html; charset=UTF-8");
 // 3. El precio de mayoreo sea realmente más barato que el unitario
 if ($registro['cantidadmayoreo'] > 0 && $registro['preciomayoreo'] > 0 && $registro['preciomayoreo'] < $registro['preciounitario']): 
 ?>
-    <div style="font-size: 11px; color: #39ad19ff; font-weight: 500; margin-top: 2px;">
+    <div class="mayoreo-badge">
         <i class="bi bi-tag-fill"></i> Precio mayoreo desde <?= $registro['cantidadmayoreo'] ?> pzs.
     </div>
 <?php endif; ?>
                                         </div>
                                     </a>
                                     <!-- Botón de aadir carrito -->
-                                    <div class="d-flex align-items-center p-3 mt-auto">
+                                    <div class="d-flex align-items-center p-2 pt-1 mt-auto">
                                         <button onclick="addCart('<?= $registro['productoID']; ?>')"
-                                            class="btn btn-danger w-100"
+                                            class="btn btn-primary btn-sm w-100"
                                             id="btn-add-<?= $registro['productoID']; ?>">
                                             <small>
                                                 <i class="bi bi-cart2"></i>
@@ -222,7 +207,7 @@ if ($registro['cantidadmayoreo'] > 0 && $registro['preciomayoreo'] > 0 && $regis
                     <?php
                         }
                     } else {
-                        echo "<div style='min-height: 70vh;display: flex;justify-content: center;align-items: center;text-align: center;'><p>No se encontró ningún producto</p></div>";
+                        echo "<div class='empty-state'><p>No se encontró ningún producto</p></div>";
                     }
                     ?>
 
@@ -235,9 +220,9 @@ if ($registro['cantidadmayoreo'] > 0 && $registro['preciomayoreo'] > 0 && $regis
 
     <div class="floating-button" id="cartButton" style="display: none;">
         <a href="<?= BASE_URL ?>/cart.php">
-            <span style="background-color: #fff; color: #213443; padding: 5px 5px 5px 7px; border-radius: 50px; margin-right: 10px;">
+            <span class="chip-cart">
                 <i class="bi bi-cart"></i>
-                <span id="cartCount" style="font-weight: bold; margin-left: 4px;"></span>
+                <span id="cartCount" class="cart-count-font"></span>
             </span>
             Carrito de compras
         </a>

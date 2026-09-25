@@ -105,22 +105,13 @@ if (!$pedido) {
     $contenido = $html;
 }
 ?>
-<!DOCTYPE html>
-<html lang="es">
+<?php
+$pageTitle = e($titulo);
+include APP_PATH . '/app/screens/layout/head.php';
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($titulo) ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/menu.css">
-    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ico.ico" />
-</head>
-
-<body style="background-color: #f5f5f5;">
     <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
-    <div class="container-fluid" style="max-width: 960px; margin-top: 100px;">
+    <div class="container-fluid order-container">
         <?= $contenido ?>
     </div>
     <?php include APP_PATH . '/app/screens/layout/footer.php'; ?>
