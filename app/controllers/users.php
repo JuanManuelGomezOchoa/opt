@@ -1,9 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once __DIR__ . '/app/config/config.php';
-require 'dbcon.php';
+require_once __DIR__ . '/../includes/bootstrap.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -20,7 +16,7 @@ if (isset($_POST['delete'])) {
             'title' => 'USUARIO ELIMINADO',
             'icon' => 'success'
         ];
-        header("Location: usuarios.php");
+        header("Location: " . BASE_URL . "/admin/users.php");
         exit(0);
     } else {
         $_SESSION['alert'] = [
@@ -28,7 +24,7 @@ if (isset($_POST['delete'])) {
             'title' => 'ERROR AL ELIMINAR',
             'icon' => 'error'
         ];
-        header("Location: usuarios.php");
+        header("Location: " . BASE_URL . "/admin/users.php");
         exit(0);
     }
 }
@@ -71,7 +67,7 @@ if (isset($_POST['update'])) {
             'title' => 'USUARIO EDITADO',
             'icon' => 'success'
         ];
-        header("Location: usuarios.php");
+        header("Location: " . BASE_URL . "/admin/users.php");
         exit;
     } else {
         $_SESSION['alert'] = [
@@ -79,7 +75,7 @@ if (isset($_POST['update'])) {
             'title' => 'ERROR AL EDITAR',
             'icon' => 'error'
         ];
-        header("Location: usuarios.php");
+        header("Location: " . BASE_URL . "/admin/users.php");
         exit;
     }
 }
@@ -113,7 +109,7 @@ if (isset($_POST['save'])) {
             'message' => 'Este correo ya está registrado',
             'icon' => 'error'
         ];
-        header("Location: usuarios.php");
+        header("Location: " . BASE_URL . "/admin/users.php");
         exit(0);
     } else {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -123,31 +119,8 @@ if (isset($_POST['save'])) {
         $query_run = mysqli_query($con, $query);
         if ($query_run) {
 
-            // Configuracion SMTP
-            $host = env('SMTP_ADMIN_HOST');
-            $port = (int) env('SMTP_ADMIN_PORT');
-            $username = env('SMTP_ADMIN_USER');
-            $password = env('SMTP_ADMIN_PASS');
-            $security = env('SMTP_ADMIN_SECURITY', 'tls');
-
-
-            // Crear instancia PHPMailer
-            $mail = new PHPMailer(true);
-
-            // Configurar SMTP
-            $mail->isSMTP();
-            $mail->Host = $host;
-            $mail->Port = $port;
-            $mail->SMTPAuth = true;
-            $mail->Username = $username;
-            $mail->Password = $password;
-            $mail->SMTPSecure = $security;
-            // $mail->SMTPDebug = 2;
-            // $mail->Debugoutput = 'error_log';
-
-
-            // Configurar correo
-            $mail->setFrom(env('SMTP_ADMIN_FROM_EMAIL'), env('SMTP_ADMIN_FROM_NAME'));
+            // Configuracion SMTP (centralizada en app/includes/mailer.php)
+            $mail = nuevoCorreo('admin');
             // $mail->addReplyTo($email, $nombreuser);
             $mail->addAddress($email);
             $mail->Subject = 'NUEVO USUARIO';
@@ -221,7 +194,7 @@ if (isset($_POST['save'])) {
                 ];
             }
 
-            header("Location: usuarios.php");
+            header("Location: " . BASE_URL . "/admin/users.php");
             exit(0);
         } else {
             $_SESSION['alert'] = [
@@ -229,7 +202,7 @@ if (isset($_POST['save'])) {
                 'message' => 'Notifica a soporte',
                 'icon' => 'error'
             ];
-            header("Location: usuarios.php");
+            header("Location: " . BASE_URL . "/admin/users.php");
             exit(0);
         }
     }

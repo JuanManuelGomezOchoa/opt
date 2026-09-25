@@ -1,8 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require 'dbcon.php';
+require_once __DIR__ . '/../includes/bootstrap.php';
 
 if (isset($_POST['delete'])) {
     $id = mysqli_real_escape_string($con, $_POST['delete']);
@@ -27,7 +24,7 @@ if (isset($_POST['delete'])) {
             'message' => 'Producto eliminado exitosamente',
             'icon' => 'success'
         ];
-        header("Location: carga-tienda-en-linea.php");
+        header("Location: " . BASE_URL . "/admin/store-upload.php");
         exit(0);
     } else {
         $_SESSION['alert'] = [
@@ -35,7 +32,7 @@ if (isset($_POST['delete'])) {
             'message' => 'Notifica a soporte',
             'icon' => 'error'
         ];
-        header("Location: carga-tienda-en-linea.php");
+        header("Location: " . BASE_URL . "/admin/store-upload.php");
         exit(0);
     }
 }
@@ -132,7 +129,7 @@ if (isset($_POST['update'])) {
             $query_medio = "SELECT medio FROM mediosventa WHERE id = '$medio_id'";
             $result_medio = mysqli_query($con, $query_medio);
             if ($row = mysqli_fetch_assoc($result_medio)) {
-                $file_path = $row['medio'];
+                $file_path = APP_PATH . '/public/' . $row['medio'];
                 if (file_exists($file_path)) {
                     unlink($file_path); // Eliminar el archivo
                 }
@@ -146,7 +143,7 @@ if (isset($_POST['update'])) {
 
     // Guardar nuevos medios en la carpeta y almacenar sus rutas en la base de datos
     if (isset($_FILES['medios']) && !empty($_FILES['medios']['tmp_name'][0])) {
-        $directorio = 'productosventa/';
+        $directorio = APP_PATH . '/public/assets/uploads/products/';
         if (!is_dir($directorio)) {
             mkdir($directorio, 0777, true);
         }
@@ -172,7 +169,7 @@ if (isset($_POST['update'])) {
                 continue; 
             }
 
-            $ruta_archivo = $directorio . $nombre_archivo;
+            $ruta_archivo = 'assets/uploads/products/' . $nombre_archivo;
             $query_medio = "INSERT INTO mediosventa (idproducto, medio) VALUES ('$idproducto', '$ruta_archivo')";
             mysqli_query($con, $query_medio);
         }
@@ -249,7 +246,7 @@ if (isset($_POST['save'])) {
         }
 
         if (isset($_FILES['medios']) && !empty($_FILES['medios']['tmp_name'][0])) {
-            $directorio = 'productosventa/';
+            $directorio = APP_PATH . '/public/assets/uploads/products/';
             if (!is_dir($directorio)) {
                 mkdir($directorio, 0777, true);
             }
@@ -274,7 +271,7 @@ if (isset($_POST['save'])) {
                     continue; 
                 }
 
-                $ruta_archivo = $directorio . $nombre_archivo;
+                $ruta_archivo = 'assets/uploads/products/' . $nombre_archivo;
                 $query_medio = "INSERT INTO mediosventa SET idproducto='$idproducto', medio='$ruta_archivo'";
                 mysqli_query($con, $query_medio);
             }
@@ -294,7 +291,7 @@ if (isset($_POST['save'])) {
             'message' => 'Producto registrado con éxito',
             'icon' => 'success'
         ];
-        header("Location: carga-tienda-en-linea.php");
+        header("Location: " . BASE_URL . "/admin/store-upload.php");
         exit(0);
     } else {
         $_SESSION['alert'] = [
@@ -302,7 +299,7 @@ if (isset($_POST['save'])) {
             'message' => 'Notifica a soporte',
             'icon' => 'error'
         ];
-        header("Location: carga-tienda-en-linea.php");
+        header("Location: " . BASE_URL . "/admin/store-upload.php");
         exit(0);
     }
 }
@@ -414,7 +411,7 @@ if (isset($_POST['duplicar'])) {
             'message' => 'Tallas agregadas correctamente',
             'icon' => 'success'
         ];
-        header('Location: carga-tienda-en-linea.php');
+        header('Location: ' . BASE_URL . '/admin/store-upload.php');
         exit();
     } catch (Exception $e) {
 
@@ -425,7 +422,7 @@ if (isset($_POST['duplicar'])) {
                 $e->getMessage(),
             'icon' => 'error'
         ];
-        header('Location: carga-tienda-en-linea.php');
+        header('Location: ' . BASE_URL . '/admin/store-upload.php');
         exit();
     }
 }
@@ -444,7 +441,7 @@ if (isset($_POST['saveTalla'])) {
             'message' => 'Los datos del formulario están incompletos',
             'icon'    => 'error'
         ];
-        header('Location: carga-tienda-en-linea.php');
+        header('Location: ' . BASE_URL . '/admin/store-upload.php');
         exit;
     }
 
@@ -619,7 +616,7 @@ if (isset($_POST['saveTalla'])) {
         }
 
         $con->commit();
-        header('Location: carga-tienda-en-linea.php');
+        header('Location: ' . BASE_URL . '/admin/store-upload.php');
         exit;
     } catch (Exception $e) {
         $con->rollback();
@@ -629,7 +626,7 @@ if (isset($_POST['saveTalla'])) {
             'message' => 'No se pudo guardar el producto. Intenta de nuevo.',
             'icon'    => 'error'
         ];
-        header('Location: carga-tienda-en-linea.php');
+        header('Location: ' . BASE_URL . '/admin/store-upload.php');
         exit;
     }
 }

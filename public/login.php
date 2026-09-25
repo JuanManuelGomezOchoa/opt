@@ -1,12 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require 'dbcon.php';
+require_once __DIR__ . '/../app/includes/bootstrap.php';
 
 // Si ya tiene sesión activa, mandarlo directo a usuarios.php
 if (isset($_SESSION['username'])) {
-    header("Location: usuarios.php");
+    header("Location: " . BASE_URL . "/admin/users.php");
     exit();
 }
 
@@ -56,7 +53,7 @@ if (isset($_POST['login_btn'])) {
                 $_SESSION['username'] = $db_username;
                 $_SESSION['rol'] = $db_rol;
                 
-                header("Location: usuarios.php");
+                header("Location: " . BASE_URL . "/admin/users.php");
                 exit();
             } else {
                 $_SESSION['alert'] = [

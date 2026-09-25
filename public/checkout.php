@@ -1,8 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require 'dbcon.php';
+require_once __DIR__ . '/../app/includes/bootstrap.php';
 
 $alert = isset($_SESSION['alert']) ? $_SESSION['alert'] : null;
 
@@ -38,23 +35,23 @@ if (!empty($alert)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/menu.css">
-    <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/menu.css">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ico.ico" />
     <script src="https://maps.googleapis.com/maps/api/js?key=<?= htmlspecialchars(env('GOOGLE_MAPS_API_KEY'), ENT_QUOTES, 'UTF-8'); ?>&libraries=places&callback=initMap" async></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let cart = localStorage.getItem("empresaCart");
             if (!cart || cart === "[]" || cart.trim() === "") {
-                window.location.href = "tienda-en-linea.php";
+                window.location.href = "<?= BASE_URL ?>/index.php";
             }
             try {
                 let parsed = JSON.parse(cart);
                 if (!Array.isArray(parsed) || parsed.length === 0) {
-                    window.location.href = "tienda-en-linea.php";
+                    window.location.href = "<?= BASE_URL ?>/index.php";
                 }
             } catch (e) {
-                window.location.href = "tienda-en-linea.php";
+                window.location.href = "<?= BASE_URL ?>/index.php";
             }
         });
 
@@ -129,13 +126,13 @@ if (!empty($alert)) {
 </head>
 
 <body>
-    <?php include('componentes/menu.php'); ?>
+    <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
 
     <div class="container-fluid">
         <div class="row mt-5 justify-content-center">
             <div class="col-12 col-md-8 mt-5 p-5">
                 <h2>PASO 2: INFORMACIÓN PARA ENVÍO</h2>
-                <form action="codeenvio.php" method="post" class="row mt-4">
+                <form action="<?= BASE_URL ?>/actions/orders.php" method="post" class="row mt-4">
                     <input type="hidden" name="cuponLS" id="cuponLS">
                     <input type="hidden" name="cartLS" id="cartLS">
                     <div class="form-floating col-12">
@@ -242,11 +239,11 @@ if (!empty($alert)) {
             </div>
         </div>
     </div>
-    <?php include 'footer.php'; ?>
+    <?php include APP_PATH . '/app/screens/layout/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
-    <script src="js/menu.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/menu.js"></script>
     <script>
         function setValue(name, value) {
             const input = document.querySelector(`input[name="${name}"]`);

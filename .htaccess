@@ -1,0 +1,32 @@
+# ============================================================
+# FASE 2.1 — .htaccess raíz (C:/xampp/htdocs/opt)
+# Sitio accesible en http://localhost/opt (sin vhost)
+# ============================================================
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /opt/
+
+# ------------------------------------------------------------
+# 1. Bloquear acceso web a rutas sensibles y archivos ocultos
+# ------------------------------------------------------------
+RewriteRule ^\.env - [F,L]
+RewriteRule ^\.git[^/]* - [F,L]
+RewriteRule ^(app|vendor|sql)(/|$) - [F,L]
+RewriteRule ^(composer\.json|composer\.lock)$ - [F,L]
+RewriteRule ^README\.md$ - [F,L]
+
+# ------------------------------------------------------------
+# 2. Home explícito
+# ------------------------------------------------------------
+RewriteRule ^$ public/index.php [L]
+
+# ------------------------------------------------------------
+# 3. Enviar todo lo demás hacia public/ (sin bucles)
+#    - No reescribimos lo que ya empieza con /opt/public
+#    - No reescribimos archivos/carpetas reales que existan aquí
+# ------------------------------------------------------------
+RewriteCond %{REQUEST_URI} !^/opt/public
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L]

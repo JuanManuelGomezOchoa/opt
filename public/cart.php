@@ -1,8 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require 'dbcon.php';
+require_once __DIR__ . '/../app/includes/bootstrap.php';
 
 header("Content-Type: text/html; charset=UTF-8");
 
@@ -24,17 +21,17 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" type="image/x-icon" href="images/ics.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ics.ico">
     <title>Carrito de compras | Mi Empresa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="shortcut icon" href="images/ico.ico" type="image/x-icon">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
+    <link rel="shortcut icon" href="<?= BASE_URL ?>/assets/images/ico.ico" type="image/x-icon">
 </head>
 
 <body style="background-color: #f5f5f5;">
-    <?php include 'componentes/menu.php'; ?>
+    <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
     <div class="container-fluid">
         <div class="row mb-5 mt-5 justify-content-evenly" style="margin-top: 100px !important;padding:0px 10px;">
 
@@ -60,7 +57,7 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
 
 
                 <!-- <button class="btn btn-secondary w-100 mt-5" disabled>Guardar carrito de compras</button> -->
-                <a class="btn btn-danger w-100 mt-4 disabled" id="next" href="pedido.php">Continuar</a>
+                <a class="btn btn-danger w-100 mt-4 disabled" id="next" href="<?= BASE_URL ?>/checkout.php">Continuar</a>
 
                 <div class="mt-3">Tengo un cupón:
                     <div class="d-flex mt-1">
@@ -89,12 +86,12 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
 
         </div>
     </div>
-    <?php include 'footer.php'; ?>
+    <?php include APP_PATH . '/app/screens/layout/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="js/filtros.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/filtros.js"></script>
     <script>
         let cuponDescuento = 0;
         let cuponeando = false;
@@ -294,13 +291,13 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
                 document.getElementById("productList").innerHTML = `
         <div style='min-height: 70vh; display: flex; justify-content: center; align-items: center; text-align: center;'>
             <div><p>No tienes productos en el carrito</p>
-            <a href='tienda-en-linea.php' class='btn btn-secondary'>Tienda en línea</a></div>
+            <a href='<?= BASE_URL ?>/index.php' class='btn btn-secondary'>Tienda en línea</a></div>
         </div>`;
                 updateTotals();
                 return;
             }
 
-            $.post("get_cart_products.php", {
+            $.post("<?= BASE_URL ?>/actions/cart.php", {
                 ids
             }, function(data) {
                 if (!data || data.length === 0) {
@@ -342,8 +339,8 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
         <div class="row g-0">
             <div class="col-5 col-md-4">
                 <div style="height: 160px; overflow: hidden;">
-                    <a href="ver-producto.php?id=${prod.productoID}">
-                        <img src="${prod.primer_medio || 'images/ico.ico'}" class="img-fluid rounded-start" style="width: 100%; height: 100%; object-fit: cover;">
+                    <a href="<?= BASE_URL ?>/product.php?id=${prod.productoID}">
+                        <img src="${prod.primer_medio || '<?= BASE_URL ?>/assets/images/ico.ico'}" class="img-fluid rounded-start" style="width: 100%; height: 100%; object-fit: cover;">
                     </a>
                 </div>
             </div>
@@ -406,7 +403,7 @@ $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
             let subtotal = total - descuento;
 
             $.ajax({
-                url: "validar_cupon.php",
+                url: "<?= BASE_URL ?>/actions/coupon.php",
                 type: "POST",
                 data: {
                     codigo,

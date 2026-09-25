@@ -1,0 +1,5 @@
+# ============================================================
+# FASE 2.1 — .htaccess de public/ (DocumentRoot en producción)
+# ============================================================
+DirectoryIndex index.php
+Options -Indexes

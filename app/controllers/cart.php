@@ -1,5 +1,5 @@
 <?php
-require 'dbcon.php';
+require_once __DIR__ . '/../includes/bootstrap.php';
 header("Content-Type: application/json; charset=UTF-8");
 
 if (!isset($_POST['ids'])) {

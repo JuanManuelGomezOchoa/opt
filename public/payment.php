@@ -1,9 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once __DIR__ . '/app/config/config.php';
-require 'dbcon.php';
+require_once __DIR__ . '/../app/includes/bootstrap.php';
 
 $alert = isset($_SESSION['alert']) ? $_SESSION['alert'] : null;
 
@@ -30,7 +26,7 @@ if (!empty($alert)) {
 }
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    header('Location: tienda-en-linea.php');
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -42,13 +38,13 @@ $stmt = $con->prepare("
 ");
 
 if (!$stmt) {
-    error_log('pago.php: fallo al preparar el pedido: ' . $con->error);
+    error_log('payment.php: fallo al preparar el pedido: ' . $con->error);
     $_SESSION['alert'] = [
         'title'   => 'ERROR',
         'message' => 'Ocurrió un error, inténtalo de nuevo',
         'icon'    => 'error'
     ];
-    header('Location: tienda-en-linea.php');
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -58,7 +54,7 @@ $stmt->execute();
 $resultado = $stmt->store_result();
 
 if ($resultado === false || $stmt->num_rows === 0) {
-    header('Location: tienda-en-linea.php');
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -77,7 +73,7 @@ if (
     isset($pedido['status_pago']) &&
     strtolower($pedido['status_pago']) === 'pagado'
 ) {
-    header('Location: tienda-en-linea.php');
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -90,13 +86,13 @@ $stmtVentas = $con->prepare("
 ");
 
 if (!$stmtVentas) {
-    error_log('pago.php: fallo al preparar las ventas: ' . $con->error);
+    error_log('payment.php: fallo al preparar las ventas: ' . $con->error);
     $_SESSION['alert'] = [
         'title'   => 'ERROR',
         'message' => 'Ocurrió un error, inténtalo de nuevo',
         'icon'    => 'error'
     ];
-    header('Location: tienda-en-linea.php');
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -132,9 +128,9 @@ while ($stmtVentas->fetch()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/menu.css">
-    <link rel="shortcut icon" type="image/x-icon" href="images/ico.ico" />
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/menu.css">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ico.ico" />
     <title>Pago | Mi Emmpresa</title>
     <script type="text/javascript"
         src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -196,7 +192,7 @@ while ($stmtVentas->fetch()) {
 </style>
 
 <body>
-    <?php include('componentes/menu.php'); ?>
+    <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
 
     <div class="container-fluid bg-light">
         <div class="row mt-5 justify-content-center">
@@ -274,7 +270,7 @@ while ($stmtVentas->fetch()) {
 
             <div class="col-11 col-md-7 mt-5 mb-5 p-5 order-1">
                 <h2>PASO 3: PAGO</h2>
-                <form action="codepago.php" method="POST" id="payment-form" class="row justify-content-center">
+                <form action="<?= BASE_URL ?>/actions/payments.php" method="POST" id="payment-form" class="row justify-content-center">
                     <input type="hidden" name="identificador" value="<?= htmlspecialchars($pedido['identificador'], ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="token_id" id="token_id">
                     <input type="hidden" name="use_card_points" id="use_card_points" value="false">
@@ -393,12 +389,12 @@ while ($stmtVentas->fetch()) {
 
     </div>
 
-    <?php include 'footer.php'; ?>
+    <?php include APP_PATH . '/app/screens/layout/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
-    <script src="js/menu.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/menu.js"></script>
     <script>
         $(document).ready(function() {
             $('input[name="payment_method"]').on('change', function() {

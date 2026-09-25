@@ -1,9 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once __DIR__ . '/app/config/config.php';
-require 'dbcon.php';
+require_once __DIR__ . '/../includes/bootstrap.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -25,13 +21,13 @@ if (isset($_POST['finalizar'])) {
         $resultPedido = mysqli_query($con, $queryPedido);
 
         if (!$resultPedido || mysqli_num_rows($resultPedido) === 0) {
-            error_log('codeenvio.php: pedido no encontrado: ' . $identificador);
+            error_log('orders.php: pedido no encontrado: ' . $identificador);
             $_SESSION['alert'] = [
                 'title'   => 'ERROR',
                 'message' => 'No se encontró el pedido',
                 'icon'    => 'error'
             ];
-            header("Location: compras-aprobadas.php");
+            header("Location: " . BASE_URL . "/admin/approved-orders.php");
             exit;
         }
 
@@ -52,21 +48,8 @@ if (isset($_POST['finalizar'])) {
         $envioMonto   = (float)$pedido['envioMonto'];
         $total        = (float)$pedido['total'];
 
-        // Configuracion SMTP
-        $mail = new PHPMailer(true);
-
-        $mail->isSMTP();
-        $mail->Host = env('SMTP_ADMIN_HOST');
-        $mail->Port = (int) env('SMTP_ADMIN_PORT');
-        $mail->SMTPAuth = true;
-        $mail->Username = env('SMTP_ADMIN_USER');
-        $mail->Password = env('SMTP_ADMIN_PASS');
-        $mail->SMTPSecure = env('SMTP_ADMIN_SECURITY', 'tls');
-        // $mail->SMTPDebug = 2;
-        // $mail->Debugoutput = 'error_log';
-
-
-        $mail->setFrom(env('SMTP_ADMIN_FROM_EMAIL'), env('SMTP_ADMIN_FROM_NAME'));
+        // Configuracion SMTP (centralizada en app/includes/mailer.php)
+        $mail = nuevoCorreo('admin');
         // $mail->addReplyTo($email, $nombreuser);
         $mail->addAddress($email);
         $mail->Subject = 'PEDIDO' . ' ' . $identificador;
@@ -245,10 +228,10 @@ if (isset($_POST['finalizar'])) {
             ];
         }
 
-        header("Location: compras-aprobadas.php");
+        header("Location: " . BASE_URL . "/admin/approved-orders.php");
         exit(0);
     } else {
-        header("Location: compras-aprobadas.php");
+        header("Location: " . BASE_URL . "/admin/approved-orders.php");
         exit(0);
     }
 }
@@ -469,14 +452,14 @@ if (isset($_POST['save'])) {
 
         mysqli_commit($con);
 
-        header("Location: pago.php?id=$identificador");
+        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
         exit;
     } catch (Exception $e) {
 
         mysqli_rollback($con);
         // echo "<pre>ERROR:\n" . $e->getMessage() . "</pre>";
         error_log($e->getMessage());
-        header("Location: pedido.php");
+        header("Location: " . BASE_URL . "/checkout.php");
         exit;
     }
 }

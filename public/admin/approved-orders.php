@@ -1,8 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require 'dbcon.php';
+require_once __DIR__ . '/../../app/includes/bootstrap.php';
 
 $alert = isset($_SESSION['alert']) ? $_SESSION['alert'] : null;
 
@@ -40,7 +37,7 @@ if (isset($_SESSION['username'])) {
             'title' => 'USUARIO NO ENCONTRADO',
             'icon' => 'error'
         ];
-        header('Location: login.php');
+        header('Location: ' . BASE_URL . '/login.php');
         exit();
     }
 } else {
@@ -49,7 +46,7 @@ if (isset($_SESSION['username'])) {
         'title' => 'SESIÓN NO INICIADA',
         'icon' => 'error'
     ];
-    header('Location: login.php');
+    header('Location: ' . BASE_URL . '/login.php');
     exit();
 }
 ?>
@@ -60,17 +57,17 @@ if (isset($_SESSION['username'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" type="image/x-icon" href="images/ics.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ics.ico">
     <title>Compras aprobadas | Fastpack</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="shortcut icon" href="images/ico.ico" type="image/x-icon">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
+    <link rel="shortcut icon" href="<?= BASE_URL ?>/assets/images/ico.ico" type="image/x-icon">
 </head>
 
 <body class="sb-nav-fixed">
-    <?php include 'sidenav.php'; ?>
+    <?php include APP_PATH . '/app/screens/panel/sidenav.php'; ?>
     <div id="layoutSidenav">
         <div id="layoutSidenav_content">
             <div class="container-fluid">
@@ -209,7 +206,7 @@ if (isset($_SESSION['username'])) {
                 </div>
 
                 <div class="modal-body">
-                    <form action="codeenvio.php" method="POST">
+                    <form action="<?= BASE_URL ?>/actions/orders.php" method="POST">
 
                         <!-- Identificador visible -->
                         <div class="form-floating mb-3">

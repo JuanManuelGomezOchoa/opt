@@ -1,8 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require 'dbcon.php';
+require_once __DIR__ . '/../app/includes/bootstrap.php';
 
 header("Content-Type: text/html; charset=UTF-8");
 
@@ -17,15 +14,15 @@ header("Content-Type: text/html; charset=UTF-8");
     <!-- Google Tag Manager -->
 
     <!-- End Google Tag Manager -->
-    <link rel="shortcut icon" type="image/x-icon" href="images/ics.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/images/ics.ico">
     <title>Tienda en línea | Mi Empresa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/slickslider.css">
-    <link rel="shortcut icon" href="images/ico.ico" type="image/x-icon">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/styles.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/slickslider.css">
+    <link rel="shortcut icon" href="<?= BASE_URL ?>/assets/images/ico.ico" type="image/x-icon">
 </head>
 <style>
 
@@ -34,7 +31,7 @@ header("Content-Type: text/html; charset=UTF-8");
 <body style="background-color: #f5f5f5;">
     <!-- Google Tag Manager (noscript) -->
     <!-- End Google Tag Manager (noscript) -->
-    <?php include 'componentes/menu.php'; ?>
+    <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
     <div class="container-fluid">
         <div class="row mb-5 mt-5 justify-content-start" style="margin-top: 100px !important;padding:0px 10px;">
             <?php
@@ -161,11 +158,11 @@ header("Content-Type: text/html; charset=UTF-8");
                                 data-subcategory="<?= htmlspecialchars($registro['subcategorias'], ENT_QUOTES, 'UTF-8'); ?>">
 
                                 <div class="card img-card-container" style="width: 100%;">
-                                    <a style="text-decoration: none; color: #000;" href="ver-producto.php?id=<?= $registro['productoID']; ?>">
+                                    <a style="text-decoration: none; color: #000;" href="<?= BASE_URL ?>/product.php?id=<?= $registro['productoID']; ?>">
                                         <?php if ($registro['primer_medio']) { ?>
                                             <img src="<?= $registro['primer_medio']; ?>" class="card-img-top" style="object-fit: contain;" alt="...">
                                         <?php } else { ?>
-                                            <img src="images/ico.ico" class="card-img-top" alt="Default Image">
+                                            <img src="<?= BASE_URL ?>/assets/images/ico.ico" class="card-img-top" alt="Default Image">
                                         <?php } ?>
                                         <div class="card-body" style="padding-bottom: 0px !important;">
                                             <div>
@@ -234,10 +231,10 @@ if ($registro['cantidadmayoreo'] > 0 && $registro['preciomayoreo'] > 0 && $regis
 
         </div>
     </div>
-    <?php include 'footer.php'; ?>
+    <?php include APP_PATH . '/app/screens/layout/footer.php'; ?>
 
     <div class="floating-button" id="cartButton" style="display: none;">
-        <a href="carrito-de-compras.php">
+        <a href="<?= BASE_URL ?>/cart.php">
             <span style="background-color: #fff; color: #213443; padding: 5px 5px 5px 7px; border-radius: 50px; margin-right: 10px;">
                 <i class="bi bi-cart"></i>
                 <span id="cartCount" style="font-weight: bold; margin-left: 4px;"></span>
@@ -250,8 +247,8 @@ if ($registro['cantidadmayoreo'] > 0 && $registro['preciomayoreo'] > 0 && $regis
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-    <script src="js/slickpromo.js"></script>
-    <script src="js/filtros.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/slickpromo.js"></script>
+    <script src="<?= BASE_URL ?>/assets/js/filtros.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const cartButton = document.getElementById("cartButton");

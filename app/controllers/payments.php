@@ -1,9 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-require_once __DIR__ . '/app/config/config.php';
+require_once __DIR__ . '/../includes/bootstrap.php';
 
 use Openpay\Data\Openpay;
 use Openpay\Data\OpenpayApiTransactionError;
@@ -13,8 +9,6 @@ use Openpay\Data\OpenpayApiAuthError;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-require 'dbcon.php';
 
 if (isset($_POST['delete'])) {
     $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
@@ -36,13 +30,13 @@ if (isset($_POST['delete'])) {
 if (isset($_POST['update'])) {
 
     if (!isset($_POST['identificador']) || empty($_POST['identificador'])) {
-        error_log('codepago.php: identificador no recibido');
+        error_log('payments.php: identificador no recibido');
         $_SESSION['alert'] = [
             'title'   => 'ERROR',
             'message' => 'No se recibió el identificador del pedido',
             'icon'    => 'error'
         ];
-        header('Location: pedido.php');
+        header('Location: ' . BASE_URL . '/checkout.php');
         exit;
     }
 
@@ -57,13 +51,13 @@ if (isset($_POST['update'])) {
 ");
 
     if (!$stmt) {
-        error_log('codepago.php: fallo al preparar el pedido: ' . $con->error);
+        error_log('payments.php: fallo al preparar el pedido: ' . $con->error);
         $_SESSION['alert'] = [
             'title'   => 'ERROR',
             'message' => 'Ocurrió un error, inténtalo de nuevo',
             'icon'    => 'error'
         ];
-        header("Location: pago.php?id=$identificador");
+        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
         exit;
     }
 
@@ -81,13 +75,13 @@ if (isset($_POST['update'])) {
     );
 
     if (!$stmt->fetch()) {
-        error_log('codepago.php: pedido no encontrado: ' . $identificador);
+        error_log('payments.php: pedido no encontrado: ' . $identificador);
         $_SESSION['alert'] = [
             'title'   => 'ERROR',
             'message' => 'No se encontró el pedido',
             'icon'    => 'error'
         ];
-        header("Location: pago.php?id=$identificador");
+        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
         exit;
     }
 
@@ -184,7 +178,7 @@ if (isset($_POST['update'])) {
             $update_stmt->execute();
 
             notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $referencia, $url_pdf, $montoFinal, $vigenciaAmigable);
-            header("Location: orden.php?id=" . $identificador);
+            header("Location: " . BASE_URL . "/order.php?id=" . $identificador);
             exit();
         } else {
             if ($charge->status == 'completed') {
@@ -194,7 +188,7 @@ if (isset($_POST['update'])) {
                 $update_stmt->bind_param("ss", $charge->id, $identificador);
                 $update_stmt->execute();
 
-                header("Location: orden.php?id=" . $identificador);
+                header("Location: " . BASE_URL . "/order.php?id=" . $identificador);
                 exit();
             } else if ($charge->status == 'charge_pending') {
                 // Caso B: Requiere validación 3D Secure
@@ -217,7 +211,7 @@ if (isset($_POST['update'])) {
             'message' => 'Contacta a soporte: ' . $e->getMessage(),
             'icon'    => 'error'
         ];
-        header("Location: pago.php?id=$identificador");
+        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
         exit(0);
     }
 
@@ -261,7 +255,7 @@ function handleOpenpayError($e, $identificador)
         'icon'    => 'error'
     ];
 
-    header("Location: pago.php?id=$identificador");
+    header("Location: " . BASE_URL . "/payment.php?id=$identificador");
     exit(0);
 }
 
@@ -323,11 +317,11 @@ if (isset($_POST['save'])) {
         $up_stmt->execute();
         $up_stmt->close();
 
-        header("Location: pago.php?id=$identificador");
+        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
         exit(0);
     } else {
         // error_log($stmt->error); 
-        header("Location: pedido.php");
+        header("Location: " . BASE_URL . "/checkout.php");
         exit(0);
     }
 }
@@ -335,16 +329,7 @@ if (isset($_POST['save'])) {
 
 function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $referencia, $url_pdf, $total, $vigenciaAmigable)
 {
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = env('SMTP_NOREPLY_HOST');
-    $mail->Port = (int) env('SMTP_NOREPLY_PORT');
-    $mail->SMTPAuth = true;
-    $mail->Username = env('SMTP_NOREPLY_USER');
-    $mail->Password = env('SMTP_NOREPLY_PASS');
-    $mail->SMTPSecure = env('SMTP_NOREPLY_SECURITY', 'ssl');
-
-    $mail->setFrom(env('SMTP_NOREPLY_FROM_EMAIL'), env('SMTP_NOREPLY_FROM_NAME'));
+    $mail = nuevoCorreo('noreply');
     $mail->addAddress($email);
     $mail->Subject = 'Realiza tu pago por SPEI';
     $mail->CharSet = 'UTF-8';
@@ -398,9 +383,9 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
 <p><strong>Convenio CIE (Con BBVA):</strong> ' . htmlspecialchars(implode(' ', str_split($convenio, 3)), ENT_QUOTES, 'UTF-8') . '</p>
         </div>
 
-        <p>También puedes consultar la referencia de pago <a href="' . STORE_URL . '/orden.php?id=' . $identificador . '" target="_blank">aquí</a>.</p>
+        <p>También puedes consultar la referencia de pago <a href="' . STORE_URL . '/order.php?id=' . $identificador . '" target="_blank">aquí</a>.</p>
 
-        <p>¿Quieres cambiar tu método de pago o necesitas generar una nueva referencia SPEI? Ingresa a: <a href="' . STORE_URL . '/pago.php?id=' . $identificador . '">' . STORE_URL . '/pago.php?id=' . $identificador . '</a></p>
+        <p>¿Quieres cambiar tu método de pago o necesitas generar una nueva referencia SPEI? Ingresa a: <a href="' . STORE_URL . '/payment.php?id=' . $identificador . '">' . STORE_URL . '/payment.php?id=' . $identificador . '</a></p>
 
         <p style="text-align:center;"><strong>EQUIPO DE VENTAS</strong></p>
         <p style="text-align:center;">MI EMPRESA</p>
