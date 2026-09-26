@@ -335,71 +335,52 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
 
-    $body = '
-            <!DOCTYPE html>
-<html lang="en">
+    $referenciaLegible = htmlspecialchars(implode(' ', str_split($referencia, 4)), ENT_QUOTES, 'UTF-8');
+    $clabeLegible      = htmlspecialchars(implode(' ', str_split($clabe, 4)), ENT_QUOTES, 'UTF-8');
+    $convenioLegible   = htmlspecialchars(implode(' ', str_split($convenio, 3)), ENT_QUOTES, 'UTF-8');
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+    $contenido = '<p style="margin:0 0 14px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
+        . 'Estás a un paso de finalizar tu pedido, realiza tu pago por SPEI antes del '
+        . '<strong>' . e($vigenciaAmigable) . '</strong> con los siguientes datos:</p>'
+        . renderEmailCaja([
+            'Beneficiario'          => 'DOMINIO',
+            'Concepto'              => 'Pedido #' . $identificador,
+            'Total a pagar'         => '$' . number_format($total, 2),
+            'Banco'                 => $bank,
+            'Referencia'            => $referenciaLegible,
+            'CLABE (otros bancos)'  => $clabeLegible,
+            'Convenio CIE (BBVA)'   => $convenioLegible,
+        ], 'Datos para tu pago')
+        . '<p style="margin:0 0 8px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
+        . 'También puedes consultar la referencia de pago en tu pedido.</p>'
+        . '<p style="margin:0 0 18px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
+        . '¿Necesitas cambiar tu método de pago o generar una nueva referencia SPEI? Usa el botón para volver al pago.</p>'
+        . '<p style="margin:0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
+        . '<strong style="color:#212529;">EQUIPO DE VENTAS</strong><br>MI EMPRESA</p>';
 
-<body style="margin:0; padding:0; background:#ffffff; font-family:Arial, sans-serif;">
+    adjuntarLogoCorreo($mail);
 
-   <div style="background-color: #f3f3f3; max-width: 600px; margin: 0px auto; text-align: center; line-height: 100px;">
-     <img src="https://dominio.com/images/logo.png" 
-         style="width: 90%; vertical-align: middle; display: inline-block;padding: 10px 0;" 
-         alt="">
-</div>
+    $mail->Body = renderEmail('Realiza tu pago por SPEI', $contenido, [
+        'preheader'   => 'Paga tu pedido ' . $identificador . ' por SPEI antes del ' . $vigenciaAmigable,
+        'boton_texto' => 'Ver referencia de pago',
+        'boton_url'   => STORE_URL . '/order.php?id=' . urlencode($identificador),
+    ]);
 
-
-    <div style="
-                max-width:600px;
-                background:#ffffff;
-                margin:0px auto 10px;
-                padding:15px;
-            ">
-
-       
-        <h1 style="font-size:25px; margin:30px 0; text-align:left;">
-            REALIZA TU PAGO POR SPEI
-        </h1>
-
-        <p>Estas a un paso de finalizar tu pedido, realiza tu pago por SPEI antes del <strong>' . $vigenciaAmigable . '</strong> con los siguientes datos:</p>
-
-        <div style="
-                    background: #2c3b5c; 
-                    color:#fff; 
-                    padding:15px; 
-                    border-radius:3px;
-                    margin:30px 0;
-                ">
-            <p><strong>Beneficiario:</strong> DOMINIO</p>
-            <p><strong>Concepto:</strong> Pedido #' . $identificador . '</p>
-            <p><strong>Total a pagar:</strong> $' . number_format($total, 2) . '</p>
-            <p><strong>Banco:</strong> ' . $bank . '</p>
-            <p><strong>Referencia:</strong> ' . htmlspecialchars(implode(' ', str_split($referencia, 4)), ENT_QUOTES, 'UTF-8') . '</p>
-<p><strong>CLABE (Con otros bancos):</strong> ' . htmlspecialchars(implode(' ', str_split($clabe, 4)), ENT_QUOTES, 'UTF-8') . '</p>
-<p><strong>Convenio CIE (Con BBVA):</strong> ' . htmlspecialchars(implode(' ', str_split($convenio, 3)), ENT_QUOTES, 'UTF-8') . '</p>
-        </div>
-
-        <p>También puedes consultar la referencia de pago <a href="' . STORE_URL . '/order.php?id=' . $identificador . '" target="_blank">aquí</a>.</p>
-
-        <p>¿Quieres cambiar tu método de pago o necesitas generar una nueva referencia SPEI? Ingresa a: <a href="' . STORE_URL . '/payment.php?id=' . $identificador . '">' . STORE_URL . '/payment.php?id=' . $identificador . '</a></p>
-
-        <p style="text-align:center;"><strong>EQUIPO DE VENTAS</strong></p>
-        <p style="text-align:center;">MI EMPRESA</p>
-
-        <p style="font-size:8px; color:#555;">
-            Este es un email enviado automaticamente desde el canal de comunicación del sistema de planificación de recursos empresariales MI EMPRESA.
-        </p>
-
-    </div>
-</body>
-
-</html>';
-
-    $mail->Body = $body;
+    $mail->AltBody = "Realiza tu pago por SPEI\n\n"
+        . "Estas a un paso de finalizar tu pedido, realiza tu pago por SPEI antes del " . $vigenciaAmigable . " con los siguientes datos:\n\n"
+        . "Datos para tu pago\n"
+        . "Beneficiario: DOMINIO\n"
+        . "Concepto: Pedido #" . $identificador . "\n"
+        . "Total a pagar: $" . number_format($total, 2) . "\n"
+        . "Banco: " . $bank . "\n"
+        . "Referencia: " . $referenciaLegible . "\n"
+        . "CLABE (otros bancos): " . $clabeLegible . "\n"
+        . "Convenio CIE (BBVA): " . $convenioLegible . "\n\n"
+        . "Consulta la referencia de pago: " . STORE_URL . "/order.php?id=" . urlencode($identificador) . "\n"
+        . "Cambiar metodo de pago: " . STORE_URL . "/payment.php?id=" . urlencode($identificador) . "\n\n"
+        . "EQUIPO DE VENTAS\nMI EMPRESA\n\n"
+        . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
+        . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
     try {
         $mail->send();
     } catch (Exception $e) {

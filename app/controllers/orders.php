@@ -58,8 +58,6 @@ if (isset($_POST['finalizar'])) {
 
         
 
-        $productosHTML = '';
-
         $queryVentas = "
     SELECT cantidad, titulo, sku, subtitulo, detalles, precio, descuento
     FROM ventas
@@ -68,22 +66,12 @@ if (isset($_POST['finalizar'])) {
 
         $resultVentas = mysqli_query($con, $queryVentas);
 
-        if (mysqli_num_rows($resultVentas) > 0) {
+        $filasProductos = [];
 
-            $productosHTML .= '
-        <table width="100%" cellpadding="6" cellspacing="0" style="border-collapse:collapse; background:#fff; color:#000;">
-            <thead>
-                <tr style="background:#f2f2f2;">
-                    <th align="left">Cantidad</th>
-                    <th align="left">Producto</th>
-                </tr>
-            </thead>
-            <tbody>
-    ';
+        if (mysqli_num_rows($resultVentas) > 0) {
 
             while ($row = mysqli_fetch_assoc($resultVentas)) {
 
-            
                 $cantidad  = (int)$row['cantidad'];
                 $precioU   = (float)$row['precio'];
                 $descuentoU = (float)$row['descuento'];
@@ -91,120 +79,85 @@ if (isset($_POST['finalizar'])) {
                 $precioTotal    = $precioU * $cantidad;
                 $descuentoTotal = $descuentoU * $cantidad;
 
-                $productosHTML .= '
-            <tr>
-                <td>' . $cantidad . '</td>
-                <td>
-                    <strong>' . htmlspecialchars($row['titulo']) . '</strong><br>
-                    <small>' . htmlspecialchars($row['subtitulo']) . '</small>
-                    <small>SKU: ' . htmlspecialchars($row['sku']) . '</small>
-                    <p style="font-size:11px;color: #696969ff;">' . htmlspecialchars($row['detalles']) . '</p>
-
-                    
-                <div style="text-align:right;">
-                   <p>$' . number_format($precioTotal, 2) . '</p>
-                   ' . ($descuentoTotal > 0
-                    ? '<p>-$' . number_format($descuentoTotal, 2) . '</p>'
-                    : ''
-                ) .
-                    '
-                </div>
-                </td>
-            </tr>
-        ';
+                $filasProductos[] = [
+                    'cantidad'  => $cantidad,
+                    'titulo'    => (string)$row['titulo'],
+                    'subtitulo' => (string)$row['subtitulo'],
+                    'sku'       => (string)$row['sku'],
+                    'detalles'  => (string)$row['detalles'],
+                    'importe'   => number_format($precioTotal, 2),
+                    'nota'      => $descuentoTotal > 0 ? 'Descuento -$' . number_format($descuentoTotal, 2) : '',
+                ];
             }
-
-            $productosHTML .= '
-            </tbody>
-        </table>
-    ';
-        } else {
-            $productosHTML = '<p>No se encontraron productos para este pedido.</p>';
         }
 
-        $cuponHTML = '';
-        $envioHTML = '';
+        $lineasTotales = [];
+        $lineasTotales[] = ['Subtotal', '$' . number_format($subtotal, 2)];
 
         if ($cuponMonto > 0) {
-            $cuponHTML = '<p><strong>Cupón: $' . number_format($cuponMonto, 2) . '</strong></p>';
+            $lineasTotales[] = ['Cupón', '-$' . number_format($cuponMonto, 2)];
         }
 
         if ($envioMonto > 0) {
-            $envioHTML = '<p><strong>Envío: $' . number_format($envioMonto, 2) . '</strong></p>';
+            $lineasTotales[] = ['Envío', '$' . number_format($envioMonto, 2)];
         } else {
-            $envioHTML = '<p><strong>Envío: GRATIS</strong></p>';
+            $lineasTotales[] = ['Envío', 'GRATIS'];
         }
 
 
-        $body = '
-            <!DOCTYPE html>
-<html lang="en">
+        $contenido = renderEmailCaja([
+            'Pedido ID'   => $identificador,
+            'Nombre'      => trim($nombre . ' ' . $apellidop . ' ' . $apellidom),
+            'Teléfono'    => $telefono,
+            'Domicilio'   => $calle,
+        ], 'Resumen del pedido')
+            . '<p style="margin:0 0 12px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
+            . 'TUS PRODUCTOS:</p>'
+            . renderEmailTablaProductos($filasProductos)
+            . renderEmailTotales($lineasTotales, 'Total', '$' . number_format($total, 2))
+            . (!empty($guia)
+                ? '<p style="margin:0 0 8px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
+                    . '<strong>Guía de rastreo:</strong> <a href="' . e($guia) . '" target="_blank" '
+                    . 'style="color:#dc3545;text-decoration:underline;">' . e($guia) . '</a></p>'
+                : '')
+            . '<p style="margin:16px 0 0 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
+            . 'Atentamente,<br><strong style="color:#212529;">MIEMPRESA</strong></p>';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+        adjuntarLogoCorreo($mail);
 
-<body style="margin:0; padding:0; background:#ffffff; font-family:Arial, sans-serif;">
+        $mail->Body = renderEmail('PEDIDO ' . $identificador, $contenido, [
+            'preheader'   => 'Tu pedido ' . $identificador . ($guia !== '' ? ' va en camino' : ' fue actualizado'),
+            'boton_texto' => 'Ver mi pedido',
+            'boton_url'   => STORE_URL . '/order.php?id=' . urlencode($identificador),
+        ]);
 
-   <div style="background-color: #f3f3f3; max-width: 600px; margin: 0px auto; text-align: center; line-height: 100px;">
-     <img src="https://datallizer.com/images/logo.png" 
-         style="width: 90%; vertical-align: middle; display: inline-block;padding: 10px 0;" 
-         alt="">
-</div>
+        $alt = "PEDIDO " . $identificador . "\n\n"
+            . "Resumen del pedido\n"
+            . "Pedido ID: " . $identificador . "\n"
+            . "Nombre: " . trim($nombre . ' ' . $apellidop . ' ' . $apellidom) . "\n"
+            . "Telefono: " . $telefono . "\n"
+            . "Domicilio: " . $calle . "\n\n"
+            . "TUS PRODUCTOS:\n";
+        foreach ($filasProductos as $f) {
+            $alt .= "- " . $f['cantidad'] . " x " . $f['titulo'] . "  $" . $f['importe'] . "\n";
+            if (!empty($f['nota'])) {
+                $alt .= "  " . $f['nota'] . "\n";
+            }
+        }
+        $alt .= "\n";
+        foreach ($lineasTotales as $linea) {
+            $alt .= $linea[0] . ": " . $linea[1] . "\n";
+        }
+        $alt .= "Total: $" . number_format($total, 2) . "\n\n";
+        if (!empty($guia)) {
+            $alt .= "Guia de rastreo: " . $guia . "\n\n";
+        }
+        $alt .= "Ver mi pedido: " . STORE_URL . "/order.php?id=" . urlencode($identificador) . "\n\n"
+            . "Atentamente,\nMIEMPRESA\n\n"
+            . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
+            . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
 
-
-    <div style="
-                max-width:600px;
-                background:#ffffff;
-                margin:0px auto 10px;
-                padding:15px;
-            ">
-
-       
-        <h1 style="font-size:25px; margin:30px 0; text-align:left;">
-            PEDIDO EN CAMINO
-        </h1>
-
-        <p>En próximos días recibirás tu pedido en la dirección que nos proporcionaste</p>
-
-        ' . (!empty($guia) ? '<p><strong>Guía de rastreo:</strong> <a href="' . $guia . '">' . $guia . '</a></p>' : '') . '
-
-        <div style="
-                    background: #2c3b5c; 
-                    color:#fff; 
-                    padding:15px; 
-                    border-radius:3px;
-                    margin:30px 0;
-                ">
-            <p><strong>Pedido ID ' . $identificador . ':</strong></p>
-            <p><strong>Nombre:</strong> ' . $nombre . ' ' . $apellidop . ' ' . $apellidom . '</p>
-            <p><strong>Teléfono:</strong> ' . $telefono . '</p>
-            <p><strong>Domicilio de entrega:</strong> ' . $calle . '</p>
-        </div>
-
-        <p>TUS PRODUCTOS:</p>
-            ' . $productosHTML . '
-
-            <div style="text-align:right;">
-            <p><strong>Subtotal: $' . number_format($subtotal, 2) . '</strong></p>
-' . $cuponHTML . '
-' . $envioHTML . '
-<p><strong>Total: $' . number_format($total, 2) . '</strong></p>
-</div>
-
-        <p style="text-align:center;"><strong>Atentamente</strong></p>
-        <p style="text-align:center;">MIEMPRESA</p>
-
-        <p style="font-size:8px; color:#555;">
-            Este es un email enviado automaticamente desde el canal de comunicación del sistema de planificación de recursos empresariales MIEMPRESA, la información previa a sido almacenada en la base de datos de MIEMPRESA, la información en este email fue ingresada manualmente por el usuario, es importante tener en cuenta que la presente información podrían estar desactualizada o contener errores. Le recomendamos verificar la precisión de la misma antes de tomar decisiones basadas en estos datos.
-        </p>
-
-    </div>
-</body>
-
-</html>';
-        $mail->Body = $body;
+        $mail->AltBody = $alt;
 
         $correoEnviado = false;
 

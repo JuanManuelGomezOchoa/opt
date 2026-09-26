@@ -127,50 +127,43 @@ if (isset($_POST['save'])) {
             $mail->CharSet = 'UTF-8';
             $mail->isHTML(true);
 
-            // Cuerpo del mensaje
+            // Cuerpo del mensaje (plantilla compartida + version de texto plano)
+            $contenido = '<p style="margin:0 0 14px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
+                . 'Estimado/a ' . e($nombre) . ',</p>'
+                . '<p style="margin:0 0 14px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
+                . 'Tu cuenta para gestionar el catálogo de productos y servicios de Mi Empresa se creó exitosamente.</p>'
+                . '<p style="margin:0 0 20px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
+                . 'Por seguridad no compartas tus credenciales con nadie.</p>'
+                . renderEmailCaja([
+                    'Nombre'     => trim($nombre . ' ' . $apellidopaterno . ' ' . $apellidomaterno),
+                    'Correo'     => $email,
+                    'Contraseña' => $password,
+                    'Rol'        => $rol_nombre,
+                ], 'Conoce los detalles de tu cuenta')
+                . '<p style="margin:0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
+                . 'Atentamente,<br><strong style="color:#212529;">Equipo administrativo</strong></p>';
 
-            $asunto = 'Solicitud para colaborar';
-            $cuerpo = '
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                </head>
-                <body style="font-family: system-ui;text-align: justify;background-color: #e7e7e7;">
-                    <div style="max-width:500px;margin: 0 auto;">
-                        <img style="width: 100%;background-color: #1e375c;" src="#" alt="Cintillo superior">
-                    <div style="padding: 0px 30px;padding-top: 35px;">
-                        <p>Estimado/a ' . $nombre . '</p>
-                        <p>Tu cuenta para gestionar el catálogo de productos y servicios de Mi Empresa se creo exitosamente.</p>
-                        <p>Por seguridad no compartas tus credenciales con nadie.</p>
+            adjuntarLogoCorreo($mail);
 
-                        <div style="padding: 3px 20px;background-color:#efefef;color:#000000;border-radius: 3px;margin: 50px 0px;text-align:left;">
-                        <p style="margin-bottom: 0px;"><b>Conoce los detalles de tu cuenta:</b></p>
-                        <div style="display: flex; flex-direction: column; margin: 0 auto;">
-                            <div style="display: flex; flex-wrap: wrap;">
-                                <p style="margin-right: 5px;margin-bottom: 0px;"><b>Nombre:</b></p>
-                                <p style="flex: 2;margin-bottom: 0px;">' . $nombre . ' ' . $apellidopaterno . ' ' . $apellidomaterno . '</p>
-                            </div>
-                        </div>
-                        
-                        <p><b>Correo:</b> ' . $email . '</p>
-                        <p><b>Contraseña:</b> ' . $password . '</p>
-                        <p><b>Rol:</b> ' . $rol_nombre . '</p>
-                        </div>
+            $mail->Body = renderEmail('Solicitud para colaborar', $contenido, [
+                'preheader'   => 'Tu cuenta de Mi Empresa se creó exitosamente',
+                'boton_texto' => 'Iniciar sesión',
+                'boton_url'   => BASE_URL . '/login.php',
+            ]);
 
-                        <p style="text-align: center;margin-top:80px;margin-bottom:0px;">Atentamente</p>
-                        <p style="text-align: center;margin-top:0px;margin-bottom:50px;"><b>Equipo administrativo</b></p>
-                    </div>
-                    <div style="background-color: #af3335;color: #ffffff;padding: 15px 15px;font-size: 10px;text-align: center;padding-bottom: 15px;margin-bottom: 25px;">
-                        <p>Este correo es enviado de manera automática por nuestro sistema de respuesta rápida.</p>
-                    </div>
-                    </div>
-                </body>
-                
-                </html>';
-
-            $mail->Body = $cuerpo;
+            $mail->AltBody = "Solicitud para colaborar\n\n"
+                . "Estimado/a " . $nombre . ",\n\n"
+                . "Tu cuenta para gestionar el catálogo de productos y servicios de Mi Empresa se creó exitosamente.\n"
+                . "Por seguridad no compartas tus credenciales con nadie.\n\n"
+                . "Conoce los detalles de tu cuenta:\n"
+                . "Nombre: " . trim($nombre . ' ' . $apellidopaterno . ' ' . $apellidomaterno) . "\n"
+                . "Correo: " . $email . "\n"
+                . "Contraseña: " . $password . "\n"
+                . "Rol: " . $rol_nombre . "\n\n"
+                . "Iniciar sesión: " . BASE_URL . "/login.php\n\n"
+                . "Atentamente,\nEquipo administrativo\n\n"
+                . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
+                . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
 
             $correoEnviado = false;
 
