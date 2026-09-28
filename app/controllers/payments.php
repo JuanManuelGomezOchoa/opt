@@ -356,7 +356,7 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
         . '<p style="margin:0 0 18px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
         . '¿Necesitas cambiar tu método de pago o generar una nueva referencia SPEI? Usa el botón para volver al pago.</p>'
         . '<p style="margin:0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
-        . '<strong style="color:#212529;">EQUIPO DE VENTAS</strong><br>MI EMPRESA</p>';
+        . '<strong style="color:#212529;">EQUIPO DE VENTAS</strong><br>' . e(APP_NAME) . '</p>';
 
     adjuntarLogoCorreo($mail);
 
@@ -378,7 +378,7 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
         . "Convenio CIE (BBVA): " . $convenioLegible . "\n\n"
         . "Consulta la referencia de pago: " . STORE_URL . "/order.php?id=" . urlencode($identificador) . "\n"
         . "Cambiar metodo de pago: " . STORE_URL . "/payment.php?id=" . urlencode($identificador) . "\n\n"
-        . "EQUIPO DE VENTAS\nMI EMPRESA\n\n"
+        . "EQUIPO DE VENTAS\n" . APP_NAME . "\n\n"
         . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
         . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
     try {

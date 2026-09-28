@@ -120,7 +120,7 @@ while ($stmtVentas->fetch()) {
 ?>
 
 <?php
-$pageTitle = 'Pago | Mi Empresa';
+$pageTitle = 'Pago | ' . e(APP_NAME);
 include APP_PATH . '/app/screens/layout/head.php';
 ?>
     <script type="text/javascript"

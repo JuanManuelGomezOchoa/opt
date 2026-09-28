@@ -131,7 +131,7 @@ if (isset($_POST['save'])) {
             $contenido = '<p style="margin:0 0 14px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
                 . 'Estimado/a ' . e($nombre) . ',</p>'
                 . '<p style="margin:0 0 14px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#212529;">'
-                . 'Tu cuenta para gestionar el catálogo de productos y servicios de Mi Empresa se creó exitosamente.</p>'
+                . 'Tu cuenta para gestionar el catálogo de productos y servicios de ' . e(APP_NAME) . ' se creó exitosamente.</p>'
                 . '<p style="margin:0 0 20px 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
                 . 'Por seguridad no compartas tus credenciales con nadie.</p>'
                 . renderEmailCaja([
@@ -146,14 +146,14 @@ if (isset($_POST['save'])) {
             adjuntarLogoCorreo($mail);
 
             $mail->Body = renderEmail('Solicitud para colaborar', $contenido, [
-                'preheader'   => 'Tu cuenta de Mi Empresa se creó exitosamente',
+                'preheader'   => 'Tu cuenta de ' . APP_NAME . ' se creó exitosamente',
                 'boton_texto' => 'Iniciar sesión',
                 'boton_url'   => BASE_URL . '/login.php',
             ]);
 
             $mail->AltBody = "Solicitud para colaborar\n\n"
                 . "Estimado/a " . $nombre . ",\n\n"
-                . "Tu cuenta para gestionar el catálogo de productos y servicios de Mi Empresa se creó exitosamente.\n"
+                . "Tu cuenta para gestionar el catálogo de productos y servicios de " . APP_NAME . " se creó exitosamente.\n"
                 . "Por seguridad no compartas tus credenciales con nadie.\n\n"
                 . "Conoce los detalles de tu cuenta:\n"
                 . "Nombre: " . trim($nombre . ' ' . $apellidopaterno . ' ' . $apellidomaterno) . "\n"

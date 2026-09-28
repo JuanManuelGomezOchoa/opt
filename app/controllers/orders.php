@@ -121,7 +121,7 @@ if (isset($_POST['finalizar'])) {
                     . 'style="color:#dc3545;text-decoration:underline;">' . e($guia) . '</a></p>'
                 : '')
             . '<p style="margin:16px 0 0 0;font-family:' . EMAIL_FUENTE . ';font-size:15px;line-height:1.6;color:#6c757d;">'
-            . 'Atentamente,<br><strong style="color:#212529;">MIEMPRESA</strong></p>';
+            . 'Atentamente,<br><strong style="color:#212529;">' . e(APP_NAME) . '</strong></p>';
 
         adjuntarLogoCorreo($mail);
 
@@ -153,7 +153,7 @@ if (isset($_POST['finalizar'])) {
             $alt .= "Guia de rastreo: " . $guia . "\n\n";
         }
         $alt .= "Ver mi pedido: " . STORE_URL . "/order.php?id=" . urlencode($identificador) . "\n\n"
-            . "Atentamente,\nMIEMPRESA\n\n"
+            . "Atentamente,\n" . APP_NAME . "\n\n"
             . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
             . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
 

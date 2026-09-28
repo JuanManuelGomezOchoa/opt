@@ -5,7 +5,7 @@ http_response_code(200);
 header("Content-Type: text/html; charset=UTF-8");
 ?>
 <?php
-$pageTitle = 'Producto | Mi Empresa';
+$pageTitle = 'Producto | ' . e(APP_NAME);
 include APP_PATH . '/app/screens/layout/head.php';
 ?>
 

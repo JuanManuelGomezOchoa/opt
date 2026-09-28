@@ -37,7 +37,7 @@ if (!function_exists('emailLogoDisponible')) {
 if (!function_exists('adjuntarLogoCorreo')) {
     /**
      * Incrusta el logo como CID. Si el PNG no existe o falla, el encabezado
-     * cae al texto "e-commerce" y el correo igual sale bien.
+     * cae al texto de la marca (APP_NAME) y el correo igual sale bien.
      */
     function adjuntarLogoCorreo(PHPMailer $mail): void
     {
@@ -211,7 +211,7 @@ if (!function_exists('renderEmail')) {
      */
     function renderEmail(string $titulo, string $contenidoHtml, array $opciones = []): string
     {
-        $marca = (string) ($opciones['marca'] ?? 'e-commerce');
+        $marca = (string) ($opciones['marca'] ?? APP_NAME);
         $preheader = trim((string) ($opciones['preheader'] ?? ''));
         $aviso = (string) ($opciones['aviso'] ?? 'Este correo fue generado automáticamente, por favor no respondas a este mensaje');
         $privacidadUrl = (string) ($opciones['privacidad_url'] ?? (BASE_URL . '/avisodeprivacidad.php'));
@@ -228,8 +228,8 @@ if (!function_exists('renderEmail')) {
                 . str_repeat('&#847;&zwnj;&nbsp;', 30) . '</div>';
 
         if (emailLogoDisponible()) {
-            $encabezado = '<img src="cid:' . EMAIL_LOGO_CID . '" alt="' . e($marca) . '" width="160" '
-                . 'style="display:block;margin:0 auto;border:0;width:160px;max-width:160px;height:auto;">';
+            $encabezado = '<img src="cid:' . EMAIL_LOGO_CID . '" alt="' . e($marca) . '" width="220" '
+                . 'style="display:block;margin:0 auto;border:0;width:220px;max-width:220px;height:auto;">';
         } else {
             $encabezado = '<span style="font-family:' . EMAIL_FUENTE . ';font-size:24px;font-weight:700;'
                 . 'color:#dc3545;letter-spacing:-.5px;">' . e($marca) . '</span>';

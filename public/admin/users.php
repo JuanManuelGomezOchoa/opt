@@ -53,7 +53,7 @@ if (isset($_SESSION['username'])) {
 }
 ?>
 <?php
-$pageTitle = 'Usuarios | Mi Empresa';
+$pageTitle = 'Usuarios | ' . e(APP_NAME);
 $layout = 'panel';
 $bodyClass = 'sb-nav-fixed';
 $extraCss = '

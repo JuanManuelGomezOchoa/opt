@@ -26,7 +26,7 @@ if (!empty($alert)) {
 }
 ?>
 <?php
-$pageTitle = 'Datos de envío | Mi Empresa';
+$pageTitle = 'Datos de envío | ' . e(APP_NAME);
 $extraCss = '
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">';
 include APP_PATH . '/app/screens/layout/head.php';

@@ -18,6 +18,13 @@ define('APP_DEBUG', filter_var($_ENV['APP_DEBUG'] ?? 'false', FILTER_VALIDATE_BO
 define('BASE_URL', rtrim($_ENV['BASE_URL'] ?? '', '/'));
 define('STORE_URL', rtrim($_ENV['STORE_URL'] ?? '', '/'));
 
+// Nombre comercial visible. Fijo a proposito: no se lee del .env para que la
+// marca no dependa de la configuracion local. Debe coincidir con
+// app/config/legal.php -> 'nombre_comercial'.
+if (!defined('APP_NAME')) {
+    define('APP_NAME', 'E-commerce friends');
+}
+
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
 define('DB_USER', $_ENV['DB_USER'] ?? 'root');
 define('DB_PASS', $_ENV['DB_PASS'] ?? '');

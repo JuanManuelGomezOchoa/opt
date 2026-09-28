@@ -1,4 +1,4 @@
-# Tienda en línea — Mi Empresa
+# Tienda en línea — E-commerce friends
 
 E-commerce en PHP 8.3 + MySQL + Bootstrap + Composer (OpenPay, PHPMailer, phpdotenv).
 

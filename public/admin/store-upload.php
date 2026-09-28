@@ -51,7 +51,7 @@ if (isset($_SESSION['username'])) {
 }
 ?>
 <?php
-$pageTitle = 'Carga tienda en línea | Mi empresa';
+$pageTitle = 'Carga tienda en línea | ' . e(APP_NAME);
 $layout = 'panel';
 $bodyClass = 'sb-nav-fixed';
 $extraCss = '

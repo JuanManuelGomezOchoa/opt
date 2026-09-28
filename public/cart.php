@@ -15,7 +15,7 @@ $comisionValor = str_replace('%', '', $com['valoruno']); // Quitamos el % si exi
 $comisionFactor = (float)$comisionValor / 100; // Ej: 0.03
 ?>
 <?php
-$pageTitle = 'Carrito de compras | Mi Empresa';
+$pageTitle = 'Carrito de compras | ' . e(APP_NAME);
 $extraCss = '
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">';
 include APP_PATH . '/app/screens/layout/head.php';

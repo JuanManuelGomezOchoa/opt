@@ -15,12 +15,12 @@ if ($identificador !== '') {
     $stmt->close();
 }
 
-$titulo = 'Estado de tu compra | Mi Empresa';
+        $titulo = 'Estado de tu compra | ' . e(APP_NAME);
 $contenido = '';
 
 if (!$pedido) {
     http_response_code(404);
-    $titulo = 'Orden no encontrada | Mi Empresa';
+        $titulo = 'Orden no encontrada | ' . e(APP_NAME);
     $contenido = '
         <div class="text-center py-5">
             <h3>Orden no encontrada</h3>

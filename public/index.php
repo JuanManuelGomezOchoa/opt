@@ -5,7 +5,7 @@ header("Content-Type: text/html; charset=UTF-8");
 
 ?>
 <?php
-$pageTitle = 'Tienda en línea | Mi Empresa';
+$pageTitle = 'Tienda en línea | ' . e(APP_NAME);
 $extraCss = '
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
