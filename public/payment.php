@@ -26,7 +26,7 @@ if (!empty($alert)) {
 }
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    header('Location: ' . url('index.php'));
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -44,7 +44,7 @@ if (!$stmt) {
         'message' => 'Ocurrió un error, inténtalo de nuevo',
         'icon'    => 'error'
     ];
-    header('Location: ' . url('index.php'));
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -54,7 +54,7 @@ $stmt->execute();
 $resultado = $stmt->store_result();
 
 if ($resultado === false || $stmt->num_rows === 0) {
-    header('Location: ' . url('index.php'));
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -74,7 +74,7 @@ if (
     isset($pedido['status_pago']) &&
     strtolower($pedido['status_pago']) === 'pagado'
 ) {
-    header('Location: ' . url('index.php'));
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -93,7 +93,7 @@ if (!$stmtVentas) {
         'message' => 'Ocurrió un error, inténtalo de nuevo',
         'icon'    => 'error'
     ];
-    header('Location: ' . url('index.php'));
+    header('Location: ' . BASE_URL . '/index.php');
     exit;
 }
 
@@ -250,7 +250,7 @@ include APP_PATH . '/app/screens/layout/head.php';
 
             <div class="col-11 col-md-7 mt-5 mb-5 p-5 order-1">
                 <h2>PASO 3: PAGO</h2>
-                <form action="<?= url('actions/payments.php') ?>" method="POST" id="payment-form" class="row justify-content-center">
+                <form action="<?= BASE_URL ?>/actions/payments.php" method="POST" id="payment-form" class="row justify-content-center">
                     <input type="hidden" name="identificador" value="<?= htmlspecialchars($pedido['identificador'], ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="token_id" id="token_id">
                     <input type="hidden" name="use_card_points" id="use_card_points" value="false">
@@ -374,7 +374,7 @@ include APP_PATH . '/app/screens/layout/head.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
-    <script src="<?= asset('js/menu.js') ?>"></script>
+    <script src="<?= BASE_URL ?>/assets/js/menu.js"></script>
     <script>
         $(document).ready(function() {
             $('input[name="payment_method"]').on('change', function() {

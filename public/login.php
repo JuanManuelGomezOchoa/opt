@@ -3,7 +3,7 @@ require_once __DIR__ . '/../app/includes/bootstrap.php';
 
 // Si ya tiene sesión activa, mandarlo directo a usuarios.php
 if (isset($_SESSION['username'])) {
-    header("Location: " . url("admin/users.php"));
+    header("Location: " . BASE_URL . "/admin/users.php");
     exit();
 }
 
@@ -53,7 +53,7 @@ if (isset($_POST['login_btn'])) {
                 $_SESSION['username'] = $db_username;
                 $_SESSION['rol'] = $db_rol;
                 
-                header("Location: " . url("admin/users.php"));
+                header("Location: " . BASE_URL . "/admin/users.php");
                 exit();
             } else {
                 $_SESSION['alert'] = [
@@ -61,7 +61,7 @@ if (isset($_POST['login_btn'])) {
                     'message' => 'Tu usuario se encuentra inactivo.',
                     'icon' => 'warning'
                 ];
-                header("Location: " . url("login.php"));
+                header("Location: login.php");
                 exit();
             }
         } else {
@@ -70,7 +70,7 @@ if (isset($_POST['login_btn'])) {
                 'message' => 'Contraseña incorrecta.',
                 'icon' => 'error'
             ];
-            header("Location: " . url("login.php"));
+            header("Location: login.php");
             exit();
         }
     } else {
@@ -79,7 +79,7 @@ if (isset($_POST['login_btn'])) {
             'message' => 'El correo electrónico no está registrado.',
             'icon' => 'error'
         ];
-        header("Location: " . url("login.php"));
+        header("Location: login.php");
         exit();
     }
     

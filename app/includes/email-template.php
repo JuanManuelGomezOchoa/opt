@@ -214,7 +214,7 @@ if (!function_exists('renderEmail')) {
         $marca = (string) ($opciones['marca'] ?? APP_NAME);
         $preheader = trim((string) ($opciones['preheader'] ?? ''));
         $aviso = (string) ($opciones['aviso'] ?? 'Este correo fue generado automáticamente, por favor no respondas a este mensaje');
-        $privacidadUrl = (string) ($opciones['privacidad_url'] ?? (url('avisodeprivacidad.php')));
+        $privacidadUrl = (string) ($opciones['privacidad_url'] ?? (BASE_URL . '/avisodeprivacidad.php'));
         $boton = '';
         if (!empty($opciones['boton_texto']) && !empty($opciones['boton_url'])) {
             $boton = renderEmailBoton((string) $opciones['boton_texto'], (string) $opciones['boton_url']);

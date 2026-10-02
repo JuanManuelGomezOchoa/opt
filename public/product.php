@@ -14,7 +14,7 @@ include APP_PATH . '/app/screens/layout/head.php';
         <div class="text-center">
             <h3>Oops, no se pudo mostrar este producto</h3>
             <p class="text-muted">Estamos trabajando en esta página.</p>
-            <a class="btn btn-primary" href="<?= url('index.php') ?>">Volver a la tienda</a>
+            <a class="btn btn-primary" href="<?= BASE_URL ?>/index.php">Volver a la tienda</a>
         </div>
     </div>
     <?php include APP_PATH . '/app/screens/layout/footer.php'; ?>

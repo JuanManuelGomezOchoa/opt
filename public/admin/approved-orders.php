@@ -37,7 +37,7 @@ if (isset($_SESSION['username'])) {
             'title' => 'USUARIO NO ENCONTRADO',
             'icon' => 'error'
         ];
-        header('Location: ' . url('login.php'));
+        header('Location: ' . BASE_URL . '/login.php');
         exit();
     }
 } else {
@@ -46,7 +46,7 @@ if (isset($_SESSION['username'])) {
         'title' => 'SESIÓN NO INICIADA',
         'icon' => 'error'
     ];
-    header('Location: ' . url('login.php'));
+    header('Location: ' . BASE_URL . '/login.php');
     exit();
 }
 ?>
@@ -201,7 +201,7 @@ include APP_PATH . '/app/screens/layout/head.php';
                 </div>
 
                 <div class="modal-body">
-                    <form action="<?= url('actions/orders.php') ?>" method="POST">
+                    <form action="<?= BASE_URL ?>/actions/orders.php" method="POST">
 
                         <!-- Identificador visible -->
                         <div class="form-floating mb-3">

@@ -6,6 +6,3 @@
 /backups/
 backups/
 *.sql.gz
-
-# Logs de la aplicacion (errores de BD, etc.)
-/logs/

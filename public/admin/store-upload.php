@@ -37,7 +37,7 @@ if (isset($_SESSION['username'])) {
             'title' => 'USUARIO NO ENCONTRADO',
             'icon' => 'error'
         ];
-        header('Location: ' . url('login.php'));
+        header('Location: ' . BASE_URL . '/login.php');
         exit();
     }
 } else {
@@ -46,7 +46,7 @@ if (isset($_SESSION['username'])) {
         'title' => 'SESIÓN NO INICIADA',
         'icon' => 'error'
     ];
-    header('Location: ' . url('login.php'));
+    header('Location: ' . BASE_URL . '/login.php');
     exit();
 }
 ?>
@@ -135,7 +135,7 @@ include APP_PATH . '/app/screens/layout/head.php';
 
                                                         <a href="duplicar-producto-venta.php?id=<?= $registro['id']; ?>" class="btn btn-secondary btn-sm m-1"><i class="bi bi-copy"></i></a>
 
-                                                        <form action="<?= url('actions/products.php') ?>" method="POST" class="d-inline">
+                                                        <form action="<?= BASE_URL ?>/actions/products.php" method="POST" class="d-inline">
                                                             <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-outline-danger btn-sm m-1"><i class="bi bi-trash-fill"></i></button>
                                                         </form>
                                                     </td>
@@ -167,7 +167,7 @@ include APP_PATH . '/app/screens/layout/head.php';
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="<?= url('actions/products.php') ?>" method="POST" class="row" enctype="multipart/form-data">
+                    <form action="<?= BASE_URL ?>/actions/products.php" method="POST" class="row" enctype="multipart/form-data">
                         <div class="col-12 col-md-12 form-floating mb-3">
                             <input type="text" class="form-control" name="titulo" id="titulo" placeholder="Titulo" autocomplete="off" required>
                             <label for="titulo">Título</label>
@@ -326,7 +326,7 @@ include APP_PATH . '/app/screens/layout/head.php';
                     <h1 class="modal-title fs-5" id="duplicarModalLabel">AGREGAR TALLAS A PRODUCTO</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="<?= url('actions/products.php') ?>" method="POST">
+                <form action="<?= BASE_URL ?>/actions/products.php" method="POST">
                     <div class="modal-body">
                         <div class="col-12 col-md-12 mb-3">
                             <p class="mb-1"><b>Selecciona el producto al que le quieres agregar tallas</small></b></p>

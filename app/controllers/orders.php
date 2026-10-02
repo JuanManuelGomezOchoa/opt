@@ -27,7 +27,7 @@ if (isset($_POST['finalizar'])) {
                 'message' => 'No se encontró el pedido',
                 'icon'    => 'error'
             ];
-            header("Location: " . url("admin/approved-orders.php"));
+            header("Location: " . BASE_URL . "/admin/approved-orders.php");
             exit;
         }
 
@@ -129,7 +129,7 @@ if (isset($_POST['finalizar'])) {
         $mail->Body = renderEmail('PEDIDO ' . $identificador, $contenido, [
             'preheader'   => 'Tu pedido ' . $identificador . ($guia !== '' ? ' va en camino' : ' fue actualizado'),
             'boton_texto' => 'Ver mi pedido',
-            'boton_url'   => store_url('order.php?id=') . urlencode($identificador),
+            'boton_url'   => STORE_URL . '/order.php?id=' . urlencode($identificador),
         ]);
 
         $alt = "PEDIDO " . $identificador . "\n\n"
@@ -153,10 +153,10 @@ if (isset($_POST['finalizar'])) {
         if (!empty($guia)) {
             $alt .= "Guia de rastreo: " . $guia . "\n\n";
         }
-        $alt .= "Ver mi pedido: " . store_url("order.php?id=") . urlencode($identificador) . "\n\n"
+        $alt .= "Ver mi pedido: " . STORE_URL . "/order.php?id=" . urlencode($identificador) . "\n\n"
             . "Atentamente,\n" . APP_NAME . "\n\n"
             . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
-            . "Aviso de Privacidad: " . url('avisodeprivacidad.php');
+            . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
 
         $mail->AltBody = $alt;
 
@@ -182,10 +182,10 @@ if (isset($_POST['finalizar'])) {
             ];
         }
 
-        header("Location: " . url("admin/approved-orders.php"));
+        header("Location: " . BASE_URL . "/admin/approved-orders.php");
         exit(0);
     } else {
-        header("Location: " . url("admin/approved-orders.php"));
+        header("Location: " . BASE_URL . "/admin/approved-orders.php");
         exit(0);
     }
 }
@@ -434,14 +434,14 @@ if (isset($_POST['save'])) {
 
         mysqli_commit($con);
 
-        header("Location: " . url("payment.php?id=$identificador"));
+        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
         exit;
     } catch (Exception $e) {
 
         mysqli_rollback($con);
         // echo "<pre>ERROR:\n" . $e->getMessage() . "</pre>";
         error_log($e->getMessage());
-        header("Location: " . url("checkout.php"));
+        header("Location: " . BASE_URL . "/checkout.php");
         exit;
     }
 }

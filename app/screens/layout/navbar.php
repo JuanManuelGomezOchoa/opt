@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-light fixed-top">
   <div class="container-fluid containernav">
-    <a class="navbar-brand" href="<?= url('index.php') ?>">
+    <a class="navbar-brand" href="<?= BASE_URL ?>/index.php">
       <?php include APP_PATH . '/app/screens/layout/logo.php'; ?>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
@@ -16,13 +16,13 @@
         <div class="navbar-nav ms-auto menucanvass">
           <p>Aqui va una descripcion para la versión movíl</p>
           <hr>
-          <a class="nav-item nav-link" href="<?= url('login.php') ?>">Intranet</a>
-          <a class="nav-item nav-link" href="<?= url('index.php') ?>">Tienda en línea</a>
-          <a class="nav-item nav-link" href="<?= url('cart.php') ?>"><i class="fas fa-shopping-cart"></i></a>
+          <a class="nav-item nav-link" href="<?= BASE_URL ?>/login.php">Intranet</a>
+          <a class="nav-item nav-link" href="<?= BASE_URL ?>/index.php">Tienda en línea</a>
+          <a class="nav-item nav-link" href="<?= BASE_URL ?>/cart.php"><i class="fas fa-shopping-cart"></i></a>
         </div>
       </div>
     </div>
   </div>
 </nav>
 
-<script src="<?= asset('js/menu.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/menu.js"></script>
