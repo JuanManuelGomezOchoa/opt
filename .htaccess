@@ -12,7 +12,7 @@ RewriteBase /opt/
 # ------------------------------------------------------------
 RewriteRule ^\.env - [F,L]
 RewriteRule ^\.git[^/]* - [F,L]
-RewriteRule ^(app|vendor|sql)(/|$) - [F,L]
+RewriteRule ^(app|vendor|sql|logs)(/|$) - [F,L]
 RewriteRule ^(composer\.json|composer\.lock)$ - [F,L]
 RewriteRule ^README\.md$ - [F,L]
 

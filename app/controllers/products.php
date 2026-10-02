@@ -24,7 +24,7 @@ if (isset($_POST['delete'])) {
             'message' => 'Producto eliminado exitosamente',
             'icon' => 'success'
         ];
-        header("Location: " . BASE_URL . "/admin/store-upload.php");
+        header("Location: " . url("admin/store-upload.php"));
         exit(0);
     } else {
         $_SESSION['alert'] = [
@@ -32,7 +32,7 @@ if (isset($_POST['delete'])) {
             'message' => 'Notifica a soporte',
             'icon' => 'error'
         ];
-        header("Location: " . BASE_URL . "/admin/store-upload.php");
+        header("Location: " . url("admin/store-upload.php"));
         exit(0);
     }
 }
@@ -291,7 +291,7 @@ if (isset($_POST['save'])) {
             'message' => 'Producto registrado con éxito',
             'icon' => 'success'
         ];
-        header("Location: " . BASE_URL . "/admin/store-upload.php");
+        header("Location: " . url("admin/store-upload.php"));
         exit(0);
     } else {
         $_SESSION['alert'] = [
@@ -299,7 +299,7 @@ if (isset($_POST['save'])) {
             'message' => 'Notifica a soporte',
             'icon' => 'error'
         ];
-        header("Location: " . BASE_URL . "/admin/store-upload.php");
+        header("Location: " . url("admin/store-upload.php"));
         exit(0);
     }
 }
@@ -411,7 +411,7 @@ if (isset($_POST['duplicar'])) {
             'message' => 'Tallas agregadas correctamente',
             'icon' => 'success'
         ];
-        header('Location: ' . BASE_URL . '/admin/store-upload.php');
+        header('Location: ' . url('admin/store-upload.php'));
         exit();
     } catch (Exception $e) {
 
@@ -422,7 +422,7 @@ if (isset($_POST['duplicar'])) {
                 $e->getMessage(),
             'icon' => 'error'
         ];
-        header('Location: ' . BASE_URL . '/admin/store-upload.php');
+        header('Location: ' . url('admin/store-upload.php'));
         exit();
     }
 }
@@ -441,7 +441,7 @@ if (isset($_POST['saveTalla'])) {
             'message' => 'Los datos del formulario están incompletos',
             'icon'    => 'error'
         ];
-        header('Location: ' . BASE_URL . '/admin/store-upload.php');
+        header('Location: ' . url('admin/store-upload.php'));
         exit;
     }
 
@@ -616,7 +616,7 @@ if (isset($_POST['saveTalla'])) {
         }
 
         $con->commit();
-        header('Location: ' . BASE_URL . '/admin/store-upload.php');
+        header('Location: ' . url('admin/store-upload.php'));
         exit;
     } catch (Exception $e) {
         $con->rollback();
@@ -626,7 +626,7 @@ if (isset($_POST['saveTalla'])) {
             'message' => 'No se pudo guardar el producto. Intenta de nuevo.',
             'icon'    => 'error'
         ];
-        header('Location: ' . BASE_URL . '/admin/store-upload.php');
+        header('Location: ' . url('admin/store-upload.php'));
         exit;
     }
 }

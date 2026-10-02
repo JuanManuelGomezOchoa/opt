@@ -36,7 +36,7 @@ if (isset($_POST['update'])) {
             'message' => 'No se recibió el identificador del pedido',
             'icon'    => 'error'
         ];
-        header('Location: ' . BASE_URL . '/checkout.php');
+        header('Location: ' . url('checkout.php'));
         exit;
     }
 
@@ -57,7 +57,7 @@ if (isset($_POST['update'])) {
             'message' => 'Ocurrió un error, inténtalo de nuevo',
             'icon'    => 'error'
         ];
-        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
+        header("Location: " . url("payment.php?id=$identificador"));
         exit;
     }
 
@@ -81,7 +81,7 @@ if (isset($_POST['update'])) {
             'message' => 'No se encontró el pedido',
             'icon'    => 'error'
         ];
-        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
+        header("Location: " . url("payment.php?id=$identificador"));
         exit;
     }
 
@@ -178,7 +178,7 @@ if (isset($_POST['update'])) {
             $update_stmt->execute();
 
             notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $referencia, $url_pdf, $montoFinal, $vigenciaAmigable);
-            header("Location: " . BASE_URL . "/order.php?id=" . $identificador);
+            header("Location: " . url("order.php?id=") . $identificador);
             exit();
         } else {
             if ($charge->status == 'completed') {
@@ -188,7 +188,7 @@ if (isset($_POST['update'])) {
                 $update_stmt->bind_param("ss", $charge->id, $identificador);
                 $update_stmt->execute();
 
-                header("Location: " . BASE_URL . "/order.php?id=" . $identificador);
+                header("Location: " . url("order.php?id=") . $identificador);
                 exit();
             } else if ($charge->status == 'charge_pending') {
                 // Caso B: Requiere validación 3D Secure
@@ -211,7 +211,7 @@ if (isset($_POST['update'])) {
             'message' => 'Contacta a soporte: ' . $e->getMessage(),
             'icon'    => 'error'
         ];
-        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
+        header("Location: " . url("payment.php?id=$identificador"));
         exit(0);
     }
 
@@ -255,7 +255,7 @@ function handleOpenpayError($e, $identificador)
         'icon'    => 'error'
     ];
 
-    header("Location: " . BASE_URL . "/payment.php?id=$identificador");
+    header("Location: " . url("payment.php?id=$identificador"));
     exit(0);
 }
 
@@ -322,11 +322,11 @@ if (isset($_POST['save'])) {
         $up_stmt->execute();
         $up_stmt->close();
 
-        header("Location: " . BASE_URL . "/payment.php?id=$identificador");
+        header("Location: " . url("payment.php?id=$identificador"));
         exit(0);
     } else {
         // error_log($stmt->error); 
-        header("Location: " . BASE_URL . "/checkout.php");
+        header("Location: " . url("checkout.php"));
         exit(0);
     }
 }
@@ -368,7 +368,7 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
     $mail->Body = renderEmail('Realiza tu pago por SPEI', $contenido, [
         'preheader'   => 'Paga tu pedido ' . $identificador . ' por SPEI antes del ' . $vigenciaAmigable,
         'boton_texto' => 'Ver referencia de pago',
-        'boton_url'   => STORE_URL . '/order.php?id=' . urlencode($identificador),
+        'boton_url'   => store_url('order.php?id=') . urlencode($identificador),
     ]);
 
     $mail->AltBody = "Realiza tu pago por SPEI\n\n"
@@ -381,11 +381,11 @@ function notifyCustomer($identificador, $email, $bank, $clabe, $convenio, $refer
         . "Referencia: " . $referenciaLegible . "\n"
         . "CLABE (otros bancos): " . $clabeLegible . "\n"
         . "Convenio CIE (BBVA): " . $convenioLegible . "\n\n"
-        . "Consulta la referencia de pago: " . STORE_URL . "/order.php?id=" . urlencode($identificador) . "\n"
-        . "Cambiar metodo de pago: " . STORE_URL . "/payment.php?id=" . urlencode($identificador) . "\n\n"
+        . "Consulta la referencia de pago: " . store_url("order.php?id=") . urlencode($identificador) . "\n"
+        . "Cambiar metodo de pago: " . store_url("payment.php?id=") . urlencode($identificador) . "\n\n"
         . "EQUIPO DE VENTAS\n" . APP_NAME . "\n\n"
         . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
-        . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
+        . "Aviso de Privacidad: " . url('avisodeprivacidad.php');
     try {
         $mail->send();
     } catch (Exception $e) {

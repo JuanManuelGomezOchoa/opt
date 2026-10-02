@@ -15,8 +15,43 @@ $dotenv->safeLoad();
 
 define('APP_ENV', isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] !== '' ? $_ENV['APP_ENV'] : 'local');
 define('APP_DEBUG', filter_var($_ENV['APP_DEBUG'] ?? 'false', FILTER_VALIDATE_BOOLEAN));
-define('BASE_URL', rtrim($_ENV['BASE_URL'] ?? '', '/'));
-define('STORE_URL', rtrim($_ENV['STORE_URL'] ?? '', '/'));
+
+/**
+ * Detecta esquema + host + carpeta del proyecto cuando BASE_URL no esta en el .env.
+ * Respeta los headers de proxy (ngrok manda HTTPS como X-Forwarded-Proto).
+ */
+function detect_base_url(): string
+{
+    if (PHP_SAPI === 'cli' || empty($_SERVER['HTTP_HOST'])) {
+        return '';
+    }
+    $proto = strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')[0]));
+    if ($proto !== 'http' && $proto !== 'https') {
+        $https = $_SERVER['HTTPS'] ?? '';
+        $proto = ($https !== '' && strtolower($https) !== 'off') || ($_SERVER['SERVER_PORT'] ?? '') == 443
+            ? 'https' : 'http';
+    }
+    $host = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'])[0]);
+    if (!preg_match('/^[A-Za-z0-9.\-:\[\]]+$/', $host)) {
+        $host = 'localhost';
+    }
+
+    // Carpeta del proyecto relativa al DocumentRoot (ej. /opt).
+    $folder = '';
+    $docRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
+    $root = realpath(APP_PATH);
+    if ($docRoot && $root) {
+        $docRoot = rtrim(str_replace('\\', '/', $docRoot), '/');
+        $root = str_replace('\\', '/', $root);
+        if (stripos($root, $docRoot) === 0) {
+            $folder = substr($root, strlen($docRoot));
+        }
+    }
+    return $proto . '://' . $host . rtrim($folder, '/');
+}
+
+define('BASE_URL', rtrim(trim((string) ($_ENV['BASE_URL'] ?? '')) ?: detect_base_url(), '/'));
+define('STORE_URL', rtrim(trim((string) ($_ENV['STORE_URL'] ?? '')) ?: BASE_URL, '/'));
 
 // Nombre comercial visible. Fijo a proposito: no se lee del .env para que la
 // marca no dependa de la configuracion local. Debe coincidir con
