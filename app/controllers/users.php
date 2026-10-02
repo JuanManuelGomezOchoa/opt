@@ -4,119 +4,111 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// Gestión de usuarios: SOLO administradores (validado en servidor para delete/update/save)
+requerir_rol(['administrador']);
+
+// V3: todo POST a este action debe traer un token CSRF válido (si no, 403 y no se ejecuta nada)
+csrf_validar();
+
+$volver = function (string $title, string $message, string $icon) {
+    $_SESSION['alert'] = ['title' => $title, 'message' => $message, 'icon' => $icon];
+    header("Location: " . url("admin/users.php"));
+    exit;
+};
+
 if (isset($_POST['delete'])) {
-    $registro_id = mysqli_real_escape_string($con, $_POST['delete']);
+    $registro_id = (int)$_POST['delete'];
 
-    $query = "DELETE FROM usuarios WHERE id='$registro_id' ";
-    $query_run = mysqli_query($con, $query);
-
-    if ($query_run) {
-        $_SESSION['alert'] = [
-            'message' => 'Usuario eliminado exitosamente',
-            'title' => 'USUARIO ELIMINADO',
-            'icon' => 'success'
-        ];
-        header("Location: " . url("admin/users.php"));
-        exit(0);
-    } else {
-        $_SESSION['alert'] = [
-            'message' => 'Notifica a soporte',
-            'title' => 'ERROR AL ELIMINAR',
-            'icon' => 'error'
-        ];
-        header("Location: " . url("admin/users.php"));
-        exit(0);
+    if ($registro_id === (int)$_SESSION['id']) {
+        $volver('ERROR AL ELIMINAR', 'No puedes eliminar tu propia cuenta', 'error');
     }
+
+    $stmt = $con->prepare("DELETE FROM usuarios WHERE id = ?");
+    $stmt->bind_param("i", $registro_id);
+    $ok = $stmt->execute();
+    $stmt->close();
+
+    if ($ok) {
+        $volver('USUARIO ELIMINADO', 'Usuario eliminado exitosamente', 'success');
+    }
+    $volver('ERROR AL ELIMINAR', 'Notifica a soporte', 'error');
 }
 
 if (isset($_POST['update'])) {
+    $id = (int)($_POST['id'] ?? 0);
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellidopaterno = trim($_POST['apellidopaterno'] ?? '');
+    $apellidomaterno = trim($_POST['apellidomaterno'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $rol = $_POST['rol'] ?? '';
+    $estatus = (int)($_POST['estatus'] ?? 0) === 1 ? 1 : 0;
 
-    $id = mysqli_real_escape_string($con, $_POST['id']);
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $apellidopaterno = mysqli_real_escape_string($con, $_POST['apellidopaterno']);
-    $apellidomaterno = mysqli_real_escape_string($con, $_POST['apellidomaterno']);
-    $username = mysqli_real_escape_string($con, $_POST['username']);
-    $password = $_POST['password']; // NO escapar todavía
-    $rol = mysqli_real_escape_string($con, $_POST['rol']);
-    $estatus = mysqli_real_escape_string($con, $_POST['estatus']);
+    if (!in_array($rol, ROLES_VALIDOS, true)) {
+        $volver('ERROR AL EDITAR', 'Rol no válido', 'error');
+    }
 
-    // Base del update
-    $query = "
-        UPDATE usuarios SET
-            nombre = '$nombre',
-            apellidopaterno = '$apellidopaterno',
-            apellidomaterno = '$apellidomaterno',
-            username = '$username',
-            rol = '$rol',
-            estatus = '$estatus'
-    ";
-
-    // 👉 Solo si el password NO está vacío
-    if (!empty($password)) {
+    // Solo se valida/cambia la contraseña si se capturó una nueva
+    if ($password !== '') {
+        $errores = validar_password($password);
+        if ($errores) {
+            $volver('CONTRASEÑA NO VÁLIDA', implode(' ', $errores), 'error');
+        }
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        $query .= ", password = '$hashed_password'";
-    }
-
-    $query .= " WHERE id = '$id'";
-
-    $query_run = mysqli_query($con, $query);
-
-    if ($query_run) {
-        $_SESSION['alert'] = [
-            'message' => 'Usuario editado exitosamente',
-            'title' => 'USUARIO EDITADO',
-            'icon' => 'success'
-        ];
-        header("Location: " . url("admin/users.php"));
-        exit;
+        $stmt = $con->prepare("UPDATE usuarios SET nombre=?, apellidopaterno=?, apellidomaterno=?, username=?, rol=?, estatus=?, password=? WHERE id=?");
+        $stmt->bind_param("sssssisi", $nombre, $apellidopaterno, $apellidomaterno, $username, $rol, $estatus, $hashed_password, $id);
     } else {
-        $_SESSION['alert'] = [
-            'message' => 'Notifica a soporte',
-            'title' => 'ERROR AL EDITAR',
-            'icon' => 'error'
-        ];
-        header("Location: " . url("admin/users.php"));
-        exit;
+        $stmt = $con->prepare("UPDATE usuarios SET nombre=?, apellidopaterno=?, apellidomaterno=?, username=?, rol=?, estatus=? WHERE id=?");
+        $stmt->bind_param("sssssii", $nombre, $apellidopaterno, $apellidomaterno, $username, $rol, $estatus, $id);
     }
+    $ok = $stmt->execute();
+    $stmt->close();
+
+    if ($ok) {
+        $volver('USUARIO EDITADO', 'Usuario editado exitosamente', 'success');
+    }
+    $volver('ERROR AL EDITAR', 'Notifica a soporte', 'error');
 }
 
 
 if (isset($_POST['save'])) {
 
-    $nombre = mysqli_real_escape_string($con, $_POST['nombre']);
-    $apellidopaterno = mysqli_real_escape_string($con, $_POST['apellidopaterno']);
-    $apellidomaterno = mysqli_real_escape_string($con, $_POST['apellidomaterno']);
-    $email = mysqli_real_escape_string($con, $_POST['username']);
-    $password = mysqli_real_escape_string($con, $_POST['password']);
-    $rol = mysqli_real_escape_string($con, $_POST['rol']);
-    $estatus = "1";
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellidopaterno = trim($_POST['apellidopaterno'] ?? '');
+    $apellidomaterno = trim($_POST['apellidomaterno'] ?? '');
+    $email = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $rol = $_POST['rol'] ?? '';
+    $estatus = 1;
 
-    // Verificar el rol y asignar el nombre correspondiente
-    if ($rol == 1) {
-        $rol_nombre = "Administrador";
-    } elseif ($rol == 2) {
-        $rol_nombre = "Colaborador";
-    } else {
-        $rol_nombre = "Otro"; // Por si acaso el rol no es 1 ni 2
+    if (!in_array($rol, ROLES_VALIDOS, true)) {
+        $volver('ERROR', 'Selecciona un rol válido', 'error');
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $volver('ERROR', 'Correo no válido', 'error');
+    }
+    $errores = validar_password($password);
+    if ($errores) {
+        $volver('CONTRASEÑA NO VÁLIDA', implode(' ', $errores), 'error');
     }
 
-    $check_email_query = "SELECT * FROM usuarios WHERE username='$email' LIMIT 1";
-    $result = mysqli_query($con, $check_email_query);
+    $rol_nombre = $rol === 'administrador' ? 'Administrador' : 'Vendedor';
 
-    if (mysqli_num_rows($result) > 0) {
-        $_SESSION['alert'] = [
-            'title' => 'ERROR',
-            'message' => 'Este correo ya está registrado',
-            'icon' => 'error'
-        ];
-        header("Location: " . url("admin/users.php"));
-        exit(0);
+    $stmt = $con->prepare("SELECT id FROM usuarios WHERE username = ? LIMIT 1");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $existe = $stmt->get_result()->num_rows > 0;
+    $stmt->close();
+
+    if ($existe) {
+        $volver('ERROR', 'Este correo ya está registrado', 'error');
     } else {
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-        $query = "INSERT INTO usuarios SET nombre='$nombre', apellidopaterno='$apellidopaterno', apellidomaterno='$apellidomaterno', username='$email', password='$hashed_password', rol='$rol', estatus='$estatus'";
-
-        $query_run = mysqli_query($con, $query);
+        $stmt = $con->prepare("INSERT INTO usuarios (nombre, apellidopaterno, apellidomaterno, username, password, rol, estatus) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssi", $nombre, $apellidopaterno, $apellidomaterno, $email, $hashed_password, $rol, $estatus);
+        $query_run = $stmt->execute();
+        $stmt->close();
         if ($query_run) {
 
             // Configuracion SMTP (centralizada en app/includes/mailer.php)

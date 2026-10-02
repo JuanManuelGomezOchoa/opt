@@ -66,9 +66,7 @@ include APP_PATH . '/app/screens/layout/head.php';
                 <p>
                     OpenPay, que procesa el pago: recibe tu nombre, apellidos, teléfono, correo
                     electrónico, el identificador de tu pedido, el monto a pagar, tu dirección IP
-                    y el identificador de sesión del dispositivo. Google, a través del
-                    autocompletado de direcciones (Google Maps Places) del formulario de envío:
-                    recibe lo que escribes en el campo de calle. Nuestro proveedor de correo
+                    y el identificador de sesión del dispositivo. Nuestro proveedor de correo
                     electrónico, que transmite los mensajes de tu pedido. No entregamos tus
                     datos a empresas de paquetería ni de transporte: el seguimiento de tus
                     envíos se realiza mediante un enlace de rastreo que te enviamos por correo.

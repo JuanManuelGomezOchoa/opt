@@ -1,4 +1,6 @@
 /vendor
+/backup_antes
+/docs
 .env
 .env.bak
 

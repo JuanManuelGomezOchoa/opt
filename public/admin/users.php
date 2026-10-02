@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/../../app/includes/bootstrap.php';
 
+// Solo administradores (403 para cualquier otro rol)
+requerir_rol(['administrador']);
+
 $alert = isset($_SESSION['alert']) ? $_SESSION['alert'] : null;
 
 if (!empty($alert)) {
@@ -25,32 +28,7 @@ if (!empty($alert)) {
     unset($_SESSION['alert']);
 }
 
-if (isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-
-    $query = "SELECT * FROM usuarios WHERE username = '$username'";
-    $result = mysqli_query($con, $query);
-
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $rolSesion = (int)$row['rol'];
-    } else {
-        $_SESSION['alert'] = [
-            'title' => 'USUARIO NO ENCONTRADO',
-            'icon' => 'error'
-        ];
-        header('Location: ' . url('login.php'));
-        exit();
-    }
-} else {
-    $_SESSION['alert'] = [
-        'message' => 'Para acceder debes iniciar sesión primero',
-        'title' => 'SESIÓN NO INICIADA',
-        'icon' => 'error'
-    ];
-    header('Location: ' . url('login.php'));
-    exit();
-}
+$username = $_SESSION['username'];
 ?>
 <?php
 $pageTitle = 'Usuarios | ' . e(APP_NAME);
@@ -105,17 +83,7 @@ include APP_PATH . '/app/screens/layout/head.php';
                                                         <p><?= $registro['username']; ?></p>
                                                     </td>
                                                     <td>
-                                                        <p><?php
-                                                            if ($registro['rol'] === '1') {
-                                                                echo "Administrador/a";
-                                                            } else if ($registro['rol'] === '2') {
-                                                                echo "Colaborador/a";
-                                                            } else if ($registro['rol'] === '3') {
-                                                                echo "Cliente/a";
-                                                            } else {
-                                                                echo "Error, contacte a soporte";
-                                                            }
-                                                            ?></p>
+                                                        <p><?= $registro['rol'] === 'administrador' ? 'Administrador/a' : 'Vendedor/a'; ?></p>
                                                     </td>
                                                     <td>
                                                         <?php
@@ -125,31 +93,21 @@ include APP_PATH . '/app/screens/layout/head.php';
                                                         // BOTÓN EDITAR
                                                         // ============================
 
-                                                        // Rol 1: puede editar todos
-                                                        if ($rolSesion == 1) {
+                                                        // Esta pantalla es solo para administradores: pueden editar todos
                                                         ?>
                                                             <a href="editarusuario.php?id=<?= $registro['id']; ?>" class="btn btn-outline-secondary btn-sm m-1">
                                                                 <i class="bi bi-pencil-square"></i>
                                                             </a>
                                                         <?php
-                                                        }
-
-                                                        // Rol 2: solo su propia fila
-                                                        if ($rolSesion == 2 && $registro['username'] === $username) {
-                                                        ?>
-                                                            <a href="editarusuario.php?id=<?= $registro['id']; ?>" class="btn btn-outline-secondary btn-sm m-1">
-                                                                <i class="bi bi-pencil-square"></i>
-                                                            </a>
-                                                        <?php
-                                                        }
 
                                                         // ============================
-                                                        // BOTÓN ELIMINAR (solo rol 1)
+                                                        // BOTÓN ELIMINAR
                                                         // ============================
 
-                                                        if ($rolSesion == 1 && $registro['id'] != 1) {
+                                                        if ($registro['id'] != 1) {
                                                         ?>
                                                             <form action="<?= url('actions/users.php') ?>" method="POST" class="d-inline">
+                                                                <?= csrf_campo() ?> <!-- V3: token anti-CSRF -->
                                                                 <button type="submit" name="delete" value="<?= $registro['id']; ?>" class="btn btn-outline-danger btn-sm m-1">
                                                                     <i class="bi bi-trash-fill"></i>
                                                                 </button>
@@ -187,6 +145,7 @@ include APP_PATH . '/app/screens/layout/head.php';
                 </div>
                 <div class="modal-body">
                     <form action="<?= url('actions/users.php') ?>" method="POST" class="row">
+                        <?= csrf_campo() ?> <!-- V3: token anti-CSRF -->
 
                         <div class="col-12 col-md-12 form-floating mb-3">
                             <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" autocomplete="off" required>
@@ -209,18 +168,20 @@ include APP_PATH . '/app/screens/layout/head.php';
                         </div>
 
                         <div class="col-12 col-md-7 form-floating mb-3">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="Contraseña" autocomplete="off" minlength="8" required>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Contraseña" autocomplete="new-password" data-password-policy data-feedback="password-feedback" required>
                             <label for="password">Contraseña</label>
                         </div>
 
                         <div class="col-12 col-md-5 form-floating mb-3 rolcol">
                             <select class="form-select" name="rol" id="rol" autocomplete="off" required>
                                 <option selected disabled>Seleccione el rol</option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Colaborador</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="vendedor">Vendedor</option>
                             </select>
                             <label for="rol">Rol</label>
                         </div>
+
+                        <div class="col-12 mb-3" id="password-feedback"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -235,6 +196,7 @@ include APP_PATH . '/app/screens/layout/head.php';
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
+    <script src="<?= asset('js/password-policy.js') ?>"></script>
     <script>
         $(document).ready(function() {
             $('#miTabla').DataTable({

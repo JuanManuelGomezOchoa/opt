@@ -2,8 +2,8 @@
 require_once __DIR__ . '/../app/includes/bootstrap.php';
 
 // Si ya tiene sesión activa, mandarlo directo a usuarios.php
-if (isset($_SESSION['username'])) {
-    header("Location: " . url("admin/users.php"));
+if (isset($_SESSION['id'], $_SESSION['rol'])) {
+    header("Location: " . url(pagina_inicio_por_rol($_SESSION['rol'])));
     exit();
 }
 
@@ -29,61 +29,86 @@ if (!empty($alert)) {
 
 // Procesar el formulario cuando se envía
 if (isset($_POST['login_btn'])) {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    $stmt = $con->prepare("SELECT id, nombre, username, password, rol, estatus FROM usuarios WHERE username = ? LIMIT 1");
+    $falla = function (string $mensaje) {
+        $_SESSION['alert'] = ['title' => 'ERROR', 'message' => $mensaje, 'icon' => 'error'];
+        header("Location: " . url("login.php"));
+        exit();
+    };
+
+    $stmt = $con->prepare("SELECT id, nombre, username, password, rol, estatus, intentos_fallidos, bloqueado_hasta FROM usuarios WHERE username = ? LIMIT 1");
     $stmt->bind_param("s", $email);
     $stmt->execute();
+    $u = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    $db_id = 0;
-    $db_nombre = "";
-    $db_username = "";
-    $db_password = "";
-    $db_rol = "";
-    $db_estatus = "";
+    if (!$u) {
+        // Mismo costo y mismo mensaje que una contraseña incorrecta (no revela si el correo existe)
+        password_verify($password, '$2y$10$HSe8nYP36tP.g/ygV1D9e.etA3duiyjwmG9XSv1GUhfAeTGVP.tA2');
+        $falla('Credenciales incorrectas');
+    }
 
-    $stmt->bind_result($db_id, $db_nombre, $db_username, $db_password, $db_rol, $db_estatus);
+    // Reloj de PHP para guardar y comparar (nunca NOW() de MySQL)
+    $ahora = time();
+    $bloqueadoHasta = $u['bloqueado_hasta'] ? strtotime($u['bloqueado_hasta']) : 0;
 
-    if ($stmt->fetch()) {
-        if (password_verify($password, (string) $db_password)) {
-            if ((string)$db_estatus === "1") {
-                $_SESSION['id'] = $db_id;
-                $_SESSION['nombre'] = $db_nombre;
-                $_SESSION['username'] = $db_username;
-                $_SESSION['rol'] = $db_rol;
-                
-                header("Location: " . url("admin/users.php"));
-                exit();
-            } else {
-                $_SESSION['alert'] = [
-                    'title' => 'ACCESO DENEGADO',
-                    'message' => 'Tu usuario se encuentra inactivo.',
-                    'icon' => 'warning'
-                ];
-                header("Location: " . url("login.php"));
-                exit();
-            }
-        } else {
-            $_SESSION['alert'] = [
-                'title' => 'ERROR',
-                'message' => 'Contraseña incorrecta.',
-                'icon' => 'error'
-            ];
-            header("Location: " . url("login.php"));
-            exit();
+    if ($bloqueadoHasta > $ahora) {
+        // Rechazar aunque la contraseña sea correcta
+        $minutos = (int)ceil(($bloqueadoHasta - $ahora) / 60);
+        $falla('Cuenta bloqueada por intentos fallidos. Intenta de nuevo en ' . $minutos . ' minuto(s).');
+    }
+
+    if ($bloqueadoHasta > 0) {
+        // El bloqueo ya venció: empezar el conteo desde cero
+        $stmt = $con->prepare("UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = ?");
+        $stmt->bind_param("i", $u['id']);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    if (!password_verify($password, (string)$u['password'])) {
+        // Incremento atómico por cuenta en BD; al llegar al máximo se fija el bloqueo
+        $hasta = date('Y-m-d H:i:s', $ahora + MINUTOS_BLOQUEO * 60);
+        $max = MAX_INTENTOS_FALLIDOS;
+        $stmt = $con->prepare("UPDATE usuarios SET bloqueado_hasta = IF(intentos_fallidos + 1 >= ?, ?, bloqueado_hasta), intentos_fallidos = intentos_fallidos + 1 WHERE id = ?");
+        $stmt->bind_param("isi", $max, $hasta, $u['id']);
+        $stmt->execute();
+        $stmt->close();
+
+        $previos = $bloqueadoHasta > 0 ? 0 : (int)$u['intentos_fallidos'];
+        if ($previos + 1 >= MAX_INTENTOS_FALLIDOS) {
+            $falla('Cuenta bloqueada por intentos fallidos. Intenta de nuevo en ' . MINUTOS_BLOQUEO . ' minuto(s).');
         }
-    } else {
+        $falla('Credenciales incorrectas');
+    }
+
+    if ((int)$u['estatus'] !== 1) {
         $_SESSION['alert'] = [
-            'title' => 'ERROR',
-            'message' => 'El correo electrónico no está registrado.',
-            'icon' => 'error'
+            'title' => 'ACCESO DENEGADO',
+            'message' => 'Tu usuario se encuentra inactivo.',
+            'icon' => 'warning'
         ];
         header("Location: " . url("login.php"));
         exit();
     }
-    
+
+    // Credenciales correctas: limpiar contador/bloqueo
+    $stmt = $con->prepare("UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = ?");
+    $stmt->bind_param("i", $u['id']);
+    $stmt->execute();
     $stmt->close();
+
+    // Nuevo ID de sesión ANTES de guardar los datos del usuario (anti session fixation)
+    session_regenerate_id(true);
+    $_SESSION['id'] = (int)$u['id'];
+    $_SESSION['nombre'] = $u['nombre'];
+    $_SESSION['username'] = $u['username'];
+    $_SESSION['rol'] = $u['rol'];
+
+    header("Location: " . url(pagina_inicio_por_rol($u['rol'])));
+    exit();
 }
 ?>
 <?php

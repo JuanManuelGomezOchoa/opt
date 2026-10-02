@@ -7,6 +7,7 @@
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/security.php'; // V1 cabeceras HTTP + V3 funciones CSRF
 require_once __DIR__ . '/session.php';
 require_once __DIR__ . '/helpers.php';
 require_once APP_PATH . '/app/includes/mailer.php';

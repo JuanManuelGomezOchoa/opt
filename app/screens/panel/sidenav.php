@@ -6,7 +6,7 @@ $username = $_SESSION['username'];
 
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="<?= url('admin/users.php') ?>">
+    <a class="navbar-brand ps-3" href="<?= url(pagina_inicio_por_rol($_SESSION['rol'] ?? null)) ?>">
         <?php include APP_PATH . '/app/screens/layout/logo.php'; ?>
     </a>
     <!-- Sidebar Toggle-->
@@ -32,10 +32,12 @@ $username = $_SESSION['username'];
                         <div class="sb-nav-link-icon"><i class="bi bi-gear-wide-connected"></i></div>
                         Configuraciones
                     </a>
+                    <?php if (($_SESSION['rol'] ?? '') === 'administrador'): ?>
                     <a class="nav-link" href="<?= url('admin/users.php') ?>">
                         <div class="sb-nav-link-icon"><i class="bi bi-person-fill"></i></div>
                         Usuarios
                     </a>
+                    <?php endif; ?>
                     <a class="nav-link" href="#">
                         <div class="sb-nav-link-icon"><i class="bi bi-send-fill"></i></div>
                         Marketing
