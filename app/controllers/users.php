@@ -53,7 +53,7 @@ if (isset($_POST['update'])) {
 
     // 👉 Solo si el password NO está vacío
     if (!empty($password)) {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
         $query .= ", password = '$hashed_password'";
     }
 
@@ -112,7 +112,7 @@ if (isset($_POST['save'])) {
         header("Location: " . BASE_URL . "/admin/users.php");
         exit(0);
     } else {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
         $query = "INSERT INTO usuarios SET nombre='$nombre', apellidopaterno='$apellidopaterno', apellidomaterno='$apellidomaterno', username='$email', password='$hashed_password', rol='$rol', estatus='$estatus'";
 

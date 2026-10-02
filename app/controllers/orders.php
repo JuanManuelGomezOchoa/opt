@@ -31,7 +31,8 @@ if (isset($_POST['finalizar'])) {
             exit;
         }
 
-        $pedido = mysqli_fetch_assoc($resultPedido);
+        // telefono y domicilio se guardan cifrados: se descifran para el correo
+        $pedido = descifrar_pedido(mysqli_fetch_assoc($resultPedido));
 
         $nombre       = $pedido['nombre'];
         $apellidop    = $pedido['apellidop'];
@@ -241,14 +242,42 @@ if (isset($_POST['save'])) {
         $alertasStock = [];
 
         
-        if (!mysqli_query($con, "
+        // INSERT con prepared statement; telefono y domicilio se cifran (AES-256-GCM)
+        $stmtPedido = $con->prepare("
             INSERT INTO pedidos
             (nombre, apellidop, apellidom, email, telefono, calle, exterior, interior, colonia, ciudad, estado, postal, pais, cupon, estatus)
-            VALUES
-            ('$nombre','$apellidop','$apellidom','$email','$telefono','$calle','$exterior','$interior','$colonia','$ciudad','$estado','$postal','$pais','$cupon','$estatus')
-        ")) {
-            throw new Exception(mysqli_error($con));
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        if (!$stmtPedido) {
+            throw new Exception($con->error);
         }
+
+        $nombreP    = trim($_POST['nombre']);
+        $apellidopP = trim($_POST['apellidop']);
+        $apellidomP = trim($_POST['apellidom']);
+        $emailP     = strtolower(trim($_POST['email']));
+        $telefonoC  = encrypt_data(trim($_POST['telefono']));
+        $calleC     = encrypt_data(trim($_POST['calle']));
+        $exteriorC  = encrypt_data(trim($_POST['exterior']));
+        $interiorC  = encrypt_data(trim($_POST['interior'] ?? ''));
+        $coloniaC   = encrypt_data(trim($_POST['colonia']));
+        $ciudadP    = trim($_POST['ciudad']);
+        $estadoP    = trim($_POST['estado']);
+        $postalC    = encrypt_data(trim($_POST['postal']));
+        $paisP      = trim($_POST['pais']);
+        $cuponP     = trim($_POST['cuponLS']);
+
+        $stmtPedido->bind_param(
+            "ssssssssssssssi",
+            $nombreP, $apellidopP, $apellidomP, $emailP,
+            $telefonoC, $calleC, $exteriorC, $interiorC, $coloniaC,
+            $ciudadP, $estadoP, $postalC, $paisP, $cuponP, $estatus
+        );
+
+        if (!$stmtPedido->execute()) {
+            throw new Exception($stmtPedido->error);
+        }
+        $stmtPedido->close();
 
         $pedido_id = mysqli_insert_id($con);
 

@@ -10,4 +10,4 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/session.php';
 require_once __DIR__ . '/helpers.php';
 require_once APP_PATH . '/app/includes/mailer.php';
-require_once __DIR__ . '/email-template.php';
+require_once __DIR__ . '/email-template.php';require_once __DIR__ . '/crypto.php';

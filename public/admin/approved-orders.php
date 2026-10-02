@@ -90,6 +90,7 @@ include APP_PATH . '/app/screens/layout/head.php';
                                         $query_run = mysqli_query($con, $query);
                                         if (mysqli_num_rows($query_run) > 0) {
                                             foreach ($query_run as $registro) {
+                                                $registro = descifrar_pedido($registro); // telefono y domicilio están cifrados en BD
                                                 $identificador = $registro['identificador'];
                                         ?>
                                                 <tr>

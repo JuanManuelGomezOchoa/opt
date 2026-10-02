@@ -1,3 +1,8 @@
 /vendor
 .env
 .env.bak
+
+# Respaldos de BD (fuera de public/; no versionar)
+/backups/
+backups/
+*.sql.gz

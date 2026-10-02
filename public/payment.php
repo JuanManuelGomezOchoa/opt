@@ -68,6 +68,7 @@ while ($field = $meta->fetch_field()) {
 
 call_user_func_array([$stmt, 'bind_result'], $fields);
 $stmt->fetch();
+$pedido = descifrar_pedido($pedido); // telefono y domicilio están cifrados en BD
 
 if (
     isset($pedido['status_pago']) &&

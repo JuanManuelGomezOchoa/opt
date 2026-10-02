@@ -91,7 +91,7 @@ if (isset($_POST['update'])) {
         'apellidop'  => $apellidop,
         'apellidom'  => $apellidom,
         'email'      => $email,
-        'telefono'   => $telefono,
+        'telefono'   => decrypt_data($telefono) ?? '', // se guarda cifrado; Openpay necesita el valor real
         'total'      => $total
     ];
     $stmt->close();
@@ -276,6 +276,11 @@ if (isset($_POST['save'])) {
     $cupon     = trim($_POST['cuponLS'] ?? '');
     $productos = $_POST['cartLS'] ?? '';
     $estatus   = 1;
+
+    // Datos sensibles: se cifran con AES-256-GCM antes de guardarse
+    foreach (['telefono', 'calle', 'exterior', 'interior', 'colonia', 'postal'] as $campoSensible) {
+        $$campoSensible = encrypt_data($$campoSensible);
+    }
 
     $sql = "INSERT INTO pedidos 
             (nombre, apellidop, apellidom, email, telefono, calle, exterior, interior, colonia, ciudad, estado, postal, pais, cupon, productos, estatus)
