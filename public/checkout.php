@@ -36,15 +36,15 @@ include APP_PATH . '/app/screens/layout/head.php';
         document.addEventListener("DOMContentLoaded", function() {
             let cart = localStorage.getItem("empresaCart");
             if (!cart || cart === "[]" || cart.trim() === "") {
-                window.location.href = "<?= BASE_URL ?>/index.php";
+                window.location.href = window.BASE_URL + "/index.php";
             }
             try {
                 let parsed = JSON.parse(cart);
                 if (!Array.isArray(parsed) || parsed.length === 0) {
-                    window.location.href = "<?= BASE_URL ?>/index.php";
+                    window.location.href = window.BASE_URL + "/index.php";
                 }
             } catch (e) {
-                window.location.href = "<?= BASE_URL ?>/index.php";
+                window.location.href = window.BASE_URL + "/index.php";
             }
         });
 
@@ -121,7 +121,7 @@ include APP_PATH . '/app/screens/layout/head.php';
         <div class="row mt-5 justify-content-center">
             <div class="col-12 col-md-8 mt-5 p-5">
                 <h2>PASO 2: INFORMACIÓN PARA ENVÍO</h2>
-                <form action="<?= BASE_URL ?>/actions/orders.php" method="post" class="row mt-4">
+                <form action="<?= url('actions/orders.php') ?>" method="post" class="row mt-4">
                     <input type="hidden" name="cuponLS" id="cuponLS">
                     <input type="hidden" name="cartLS" id="cartLS">
                     <div class="form-floating col-12">
@@ -232,7 +232,7 @@ include APP_PATH . '/app/screens/layout/head.php';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@10'></script>
-    <script src="<?= BASE_URL ?>/assets/js/menu.js"></script>
+    <script src="<?= asset('js/menu.js') ?>"></script>
     <script>
         function setValue(name, value) {
             const input = document.querySelector(`input[name="${name}"]`);

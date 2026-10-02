@@ -49,7 +49,7 @@ include APP_PATH . '/app/screens/layout/head.php';
 
 
                 <!-- <button class="btn btn-secondary w-100 mt-5" disabled>Guardar carrito de compras</button> -->
-                <a class="btn btn-primary w-100 mt-4 disabled" id="next" href="<?= BASE_URL ?>/checkout.php">Continuar</a>
+                <a class="btn btn-primary w-100 mt-4 disabled" id="next" href="<?= url('checkout.php') ?>">Continuar</a>
 
                 <div class="mt-3"><label for="codigoCupon">Tengo un cupón:</label>
                     <div class="d-flex mt-1">
@@ -82,7 +82,7 @@ include APP_PATH . '/app/screens/layout/head.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="<?= BASE_URL ?>/assets/js/filtros.js"></script>
+    <script src="<?= asset('js/filtros.js') ?>"></script>
     <script>
         let cuponDescuento = 0;
         let cuponeando = false;
@@ -282,13 +282,13 @@ include APP_PATH . '/app/screens/layout/head.php';
                 document.getElementById("productList").innerHTML = `
         <div class="empty-state">
             <div><p>No tienes productos en el carrito</p>
-            <a href='<?= BASE_URL ?>/index.php' class='btn btn-secondary'>Tienda en línea</a></div>
+            <a href='<?= url('index.php') ?>' class='btn btn-secondary'>Tienda en línea</a></div>
         </div>`;
                 updateTotals();
                 return;
             }
 
-            $.post("<?= BASE_URL ?>/actions/cart.php", {
+            $.post(window.BASE_URL + "/actions/cart.php", {
                 ids
             }, function(data) {
                 if (!data || data.length === 0) {
@@ -330,8 +330,8 @@ include APP_PATH . '/app/screens/layout/head.php';
         <div class="row g-0">
             <div class="col-5 col-md-4">
                 <div style="height: var(--cart-thumb-height); overflow: hidden;">
-                    <a href="<?= BASE_URL ?>/product.php?id=${prod.productoID}">
-                        <img src="${prod.primer_medio || '<?= BASE_URL ?>/assets/images/placeholder.svg'}" class="img-fluid rounded-start${prod.primer_medio ? '' : ' placeholder-img'}" style="width: 100%; height: 100%; object-fit: cover;" alt="${prod.titulo}">
+                    <a href="<?= url('product.php') ?>?id=${prod.productoID}">
+                        <img src="${prod.primer_medio || window.BASE_URL + '/assets/images/placeholder.svg'}" class="img-fluid rounded-start${prod.primer_medio ? '' : ' placeholder-img'}" style="width: 100%; height: 100%; object-fit: cover;" alt="${prod.titulo}">
                     </a>
                 </div>
             </div>
@@ -394,7 +394,7 @@ include APP_PATH . '/app/screens/layout/head.php';
             let subtotal = total - descuento;
 
             $.ajax({
-                url: "<?= BASE_URL ?>/actions/coupon.php",
+                url: window.BASE_URL + "/actions/coupon.php",
                 type: "POST",
                 data: {
                     codigo,

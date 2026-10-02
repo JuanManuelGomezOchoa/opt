@@ -9,7 +9,7 @@ $pageTitle = 'Tienda en línea | ' . e(APP_NAME);
 $extraCss = '
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="' . BASE_URL . '/assets/css/slickslider.css">';
+    <link rel="stylesheet" href="' . asset('css/slickslider.css') . '">';
 include APP_PATH . '/app/screens/layout/head.php';
 ?>
 
@@ -142,11 +142,11 @@ include APP_PATH . '/app/screens/layout/head.php';
                                 data-subcategory="<?= htmlspecialchars($registro['subcategorias'], ENT_QUOTES, 'UTF-8'); ?>">
 
                                 <div class="card img-card-container product-card">
-                                    <a class="product-link" href="<?= BASE_URL ?>/product.php?id=<?= $registro['productoID']; ?>">
+                                    <a class="product-link" href="<?= url('product.php') ?>?id=<?= $registro['productoID']; ?>">
                                         <?php if ($registro['primer_medio']) { ?>
                                             <img src="<?= $registro['primer_medio']; ?>" class="card-img-top" alt="Imagen del producto <?= htmlspecialchars($registro['titulo'], ENT_QUOTES, 'UTF-8'); ?>">
                                         <?php } else { ?>
-                                            <img src="<?= BASE_URL ?>/assets/images/placeholder.svg" class="card-img-top placeholder-img" alt="Imagen no disponible">
+                                            <img src="<?= asset('images/placeholder.svg') ?>" class="card-img-top placeholder-img" alt="Imagen no disponible">
                                         <?php } ?>
                                         <div class="card-body">
                                             <div>
@@ -219,7 +219,7 @@ if ($registro['cantidadmayoreo'] > 0 && $registro['preciomayoreo'] > 0 && $regis
     <?php include APP_PATH . '/app/screens/layout/footer.php'; ?>
 
     <div class="floating-button" id="cartButton" style="display: none;">
-        <a href="<?= BASE_URL ?>/cart.php">
+        <a href="<?= url('cart.php') ?>">
             <span class="chip-cart">
                 <i class="bi bi-cart"></i>
                 <span id="cartCount" class="cart-count-font"></span>
@@ -232,8 +232,8 @@ if ($registro['cantidadmayoreo'] > 0 && $registro['preciomayoreo'] > 0 && $regis
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/slickpromo.js"></script>
-    <script src="<?= BASE_URL ?>/assets/js/filtros.js"></script>
+    <script src="<?= asset('js/slickpromo.js') ?>"></script>
+    <script src="<?= asset('js/filtros.js') ?>"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const cartButton = document.getElementById("cartButton");

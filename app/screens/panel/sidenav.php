@@ -6,7 +6,7 @@ $username = $_SESSION['username'];
 
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="<?= BASE_URL ?>/admin/users.php">
+    <a class="navbar-brand ps-3" href="<?= url('admin/users.php') ?>">
         <?php include APP_PATH . '/app/screens/layout/logo.php'; ?>
     </a>
     <!-- Sidebar Toggle-->
@@ -14,7 +14,7 @@ $username = $_SESSION['username'];
 
     <!-- Espacio entre el logo y el botón de salir -->
     <div class="d-flex justify-content-end w-100">
-        <a class="btn btn-outline-light btn-sm btn-salir" href="<?= BASE_URL ?>/logout.php">Salir <i class="bi bi-box-arrow-right"></i></a>
+        <a class="btn btn-outline-light btn-sm btn-salir" href="<?= url('logout.php') ?>">Salir <i class="bi bi-box-arrow-right"></i></a>
     </div>
 </nav>
 
@@ -32,7 +32,7 @@ $username = $_SESSION['username'];
                         <div class="sb-nav-link-icon"><i class="bi bi-gear-wide-connected"></i></div>
                         Configuraciones
                     </a>
-                    <a class="nav-link" href="<?= BASE_URL ?>/admin/users.php">
+                    <a class="nav-link" href="<?= url('admin/users.php') ?>">
                         <div class="sb-nav-link-icon"><i class="bi bi-person-fill"></i></div>
                         Usuarios
                     </a>
@@ -65,9 +65,9 @@ $username = $_SESSION['username'];
                     </a>
                     <div class="collapse" id="collapseLayoutsLinea" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="<?= BASE_URL ?>/admin/approved-orders.php">Compras</a>
+                            <a class="nav-link" href="<?= url('admin/approved-orders.php') ?>">Compras</a>
                             <a class="nav-link" href="#">Compras finalizadas</a>
-                            <a class="nav-link" href="<?= BASE_URL ?>/admin/store-upload.php">Productos activos</a>
+                            <a class="nav-link" href="<?= url('admin/store-upload.php') ?>">Productos activos</a>
                             <a class="nav-link" href="#">Productos inactivos</a>
                             <a class="nav-link" href="#">Cupones</a>
                             <a class="nav-link" href="#">Promociones</a>
@@ -126,4 +126,4 @@ $username = $_SESSION['username'];
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="<?= BASE_URL ?>/assets/js/sidenav.js"></script>
+<script src="<?= asset('js/sidenav.js') ?>"></script>

@@ -16,7 +16,7 @@ if (isset($_POST['delete'])) {
             'title' => 'USUARIO ELIMINADO',
             'icon' => 'success'
         ];
-        header("Location: " . BASE_URL . "/admin/users.php");
+        header("Location: " . url("admin/users.php"));
         exit(0);
     } else {
         $_SESSION['alert'] = [
@@ -24,7 +24,7 @@ if (isset($_POST['delete'])) {
             'title' => 'ERROR AL ELIMINAR',
             'icon' => 'error'
         ];
-        header("Location: " . BASE_URL . "/admin/users.php");
+        header("Location: " . url("admin/users.php"));
         exit(0);
     }
 }
@@ -67,7 +67,7 @@ if (isset($_POST['update'])) {
             'title' => 'USUARIO EDITADO',
             'icon' => 'success'
         ];
-        header("Location: " . BASE_URL . "/admin/users.php");
+        header("Location: " . url("admin/users.php"));
         exit;
     } else {
         $_SESSION['alert'] = [
@@ -75,7 +75,7 @@ if (isset($_POST['update'])) {
             'title' => 'ERROR AL EDITAR',
             'icon' => 'error'
         ];
-        header("Location: " . BASE_URL . "/admin/users.php");
+        header("Location: " . url("admin/users.php"));
         exit;
     }
 }
@@ -109,7 +109,7 @@ if (isset($_POST['save'])) {
             'message' => 'Este correo ya está registrado',
             'icon' => 'error'
         ];
-        header("Location: " . BASE_URL . "/admin/users.php");
+        header("Location: " . url("admin/users.php"));
         exit(0);
     } else {
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
@@ -148,7 +148,7 @@ if (isset($_POST['save'])) {
             $mail->Body = renderEmail('Solicitud para colaborar', $contenido, [
                 'preheader'   => 'Tu cuenta de ' . APP_NAME . ' se creó exitosamente',
                 'boton_texto' => 'Iniciar sesión',
-                'boton_url'   => BASE_URL . '/login.php',
+                'boton_url'   => url('login.php'),
             ]);
 
             $mail->AltBody = "Solicitud para colaborar\n\n"
@@ -160,10 +160,10 @@ if (isset($_POST['save'])) {
                 . "Correo: " . $email . "\n"
                 . "Contraseña: " . $password . "\n"
                 . "Rol: " . $rol_nombre . "\n\n"
-                . "Iniciar sesión: " . BASE_URL . "/login.php\n\n"
+                . "Iniciar sesión: " . url("login.php\n\n")
                 . "Atentamente,\nEquipo administrativo\n\n"
                 . "Este correo fue generado automáticamente, por favor no respondas a este mensaje.\n"
-                . "Aviso de Privacidad: " . BASE_URL . '/avisodeprivacidad.php';
+                . "Aviso de Privacidad: " . url('avisodeprivacidad.php');
 
             $correoEnviado = false;
 
@@ -187,7 +187,7 @@ if (isset($_POST['save'])) {
                 ];
             }
 
-            header("Location: " . BASE_URL . "/admin/users.php");
+            header("Location: " . url("admin/users.php"));
             exit(0);
         } else {
             $_SESSION['alert'] = [
@@ -195,7 +195,7 @@ if (isset($_POST['save'])) {
                 'message' => 'Notifica a soporte',
                 'icon' => 'error'
             ];
-            header("Location: " . BASE_URL . "/admin/users.php");
+            header("Location: " . url("admin/users.php"));
             exit(0);
         }
     }

@@ -25,7 +25,7 @@ if (!$pedido) {
         <div class="text-center py-5">
             <h3>Orden no encontrada</h3>
             <p>No pudimos localizar tu orden. Revisa el enlace o contacta a soporte.</p>
-            <a class="btn btn-primary" href="' . BASE_URL . '/index.php">Volver a la tienda</a>
+            <a class="btn btn-primary" href="' . url('index.php') . '">Volver a la tienda</a>
         </div>';
 } else {
     $statusPago = $pedido['status_pago'] ?? 'Desconocido';
@@ -50,7 +50,7 @@ if (!$pedido) {
                 <hr>
                 <p class="mb-1"><strong>Total:</strong> $' . number_format((float)$pedido['total'], 2) . '</p>
                 <p class="mb-0"><strong>Fecha:</strong> ' . e($pedido['fecha']) . '</p>
-                <a class="btn btn-primary mt-3" href="' . BASE_URL . '/index.php">Volver a la tienda</a>
+                <a class="btn btn-primary mt-3" href="' . url('index.php') . '">Volver a la tienda</a>
             </div>
         </div>';
 
