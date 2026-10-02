@@ -3,19 +3,27 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
 /**
- * Unico lugar donde se maneja una BD caida: registra el error real en
- * logs/app-error.log y responde 503 con un mensaje generico (sin credenciales).
+ * Registra un error en logs/app-error.log (si no se puede escribir, usa el log de PHP).
  */
-function db_unavailable(string $detail): void
+function app_log_error(string $mensaje): void
 {
     $dir = APP_PATH . '/logs';
     if (!is_dir($dir)) {
         @mkdir($dir, 0775, true);
     }
-    $line = '[' . date('Y-m-d H:i:s') . '] Error de conexion a BD (' . DB_USER . '@' . DB_HOST . '/' . DB_NAME . '): ' . $detail . PHP_EOL;
+    $line = '[' . date('Y-m-d H:i:s') . '] ' . $mensaje . PHP_EOL;
     if (!@error_log($line, 3, $dir . '/app-error.log')) {
         error_log(trim($line));
     }
+}
+
+/**
+ * Unico lugar donde se maneja una BD caida: registra el error real en
+ * logs/app-error.log y responde 503 con un mensaje generico (sin credenciales).
+ */
+function db_unavailable(string $detail): void
+{
+    app_log_error('Error de conexion a BD (' . DB_USER . '@' . DB_HOST . '/' . DB_NAME . '): ' . $detail);
 
     while (ob_get_level() > 0) {
         ob_end_clean();

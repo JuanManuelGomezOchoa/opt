@@ -6,19 +6,33 @@ header("Content-Type: text/html; charset=UTF-8");
 $identificador = isset($_GET['id']) ? trim($_GET['id']) : '';
 
 $pedido = null;
+$errorBD = false;
 if ($identificador !== '') {
-    $stmt = $con->prepare("SELECT * FROM pedidos WHERE identificador = ? LIMIT 1");
-    $stmt->bind_param("s", $identificador);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $pedido = $result->fetch_assoc();
-    $stmt->close();
+    try {
+        $stmt = $con->prepare("SELECT * FROM pedidos WHERE identificador = ? LIMIT 1");
+        $stmt->bind_param("s", $identificador);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $pedido = $result->fetch_assoc();
+        $stmt->close();
+    } catch (Throwable $ex) {
+        app_log_error('order.php: fallo al consultar el pedido: ' . $ex->getMessage());
+        $errorBD = true;
+    }
 }
 
         $titulo = 'Estado de tu compra | ' . e(APP_NAME);
 $contenido = '';
 
-if (!$pedido) {
+if ($errorBD) {
+    http_response_code(500);
+    $titulo = 'Error | ' . e(APP_NAME);
+    $contenido = '
+        <div class="text-center py-5">
+            <h3>Ocurrió un error, inténtalo de nuevo</h3>
+            <a class="btn btn-primary" href="' . url('index.php') . '">Volver a la tienda</a>
+        </div>';
+} elseif (!$pedido) {
     http_response_code(404);
         $titulo = 'Orden no encontrada | ' . e(APP_NAME);
     $contenido = '
@@ -68,31 +82,41 @@ if (!$pedido) {
                 </thead>
                 <tbody>';
 
-    $idPedido = (int)$pedido['id'];
-    $stmtLineas = $con->prepare(
-        "SELECT pv.cantidad, pv.preciounitario, p.titulo
-         FROM pedidosventas pv
-         LEFT JOIN productosventa p ON p.idproducto = pv.idproducto
-         WHERE pv.idpedido = ?"
-    );
-    $stmtLineas->bind_param("i", $idPedido);
-    $stmtLineas->execute();
-    $resultLineas = $stmtLineas->get_result();
-
+    // Las lineas del pedido viven en la tabla `ventas`, enlazadas por identificador
     $huboLineas = false;
-    while ($linea = $resultLineas->fetch_assoc()) {
-        $huboLineas = true;
-        $html .= '
+    $errorLineas = false;
+    try {
+        $stmtLineas = $con->prepare(
+            "SELECT cantidad, precio, titulo
+             FROM ventas
+             WHERE identificador = ?"
+        );
+        $stmtLineas->bind_param("s", $pedido['identificador']);
+        $stmtLineas->execute();
+        $resultLineas = $stmtLineas->get_result();
+
+        while ($linea = $resultLineas->fetch_assoc()) {
+            $huboLineas = true;
+            $cantidadLinea = (int)$linea['cantidad'];
+            $precioLinea = (float)$linea['precio'];
+            $html .= '
                     <tr>
                         <td>' . e($linea['titulo'] ?? 'Producto') . '</td>
-                        <td>' . (int)$linea['cantidad'] . '</td>
-                        <td>$' . number_format((float)$linea['preciounitario'], 2) . '</td>
-                        <td>$' . number_format((float)$linea['preciounitario'] * (int)$linea['cantidad'], 2) . '</td>
+                        <td>' . $cantidadLinea . '</td>
+                        <td>$' . number_format($precioLinea, 2) . '</td>
+                        <td>$' . number_format($precioLinea * $cantidadLinea, 2) . '</td>
                     </tr>';
+        }
+        $stmtLineas->close();
+    } catch (Throwable $ex) {
+        app_log_error('order.php: fallo al consultar las lineas del pedido ' . $pedido['identificador'] . ': ' . $ex->getMessage());
+        $errorLineas = true;
     }
-    $stmtLineas->close();
 
-    if (!$huboLineas) {
+    if ($errorLineas) {
+        $html .= '
+                    <tr><td colspan="4" class="text-center">Ocurrió un error, inténtalo de nuevo</td></tr>';
+    } elseif (!$huboLineas) {
         $html .= '
                     <tr><td colspan="4" class="text-center">Sin productos registrados</td></tr>';
     }
