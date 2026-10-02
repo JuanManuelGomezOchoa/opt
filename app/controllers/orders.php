@@ -209,23 +209,36 @@ if (isset($_POST['save'])) {
         }
 
        
-        $nombre     = mysqli_real_escape_string($con, $_POST['nombre']);
-        $apellidop  = mysqli_real_escape_string($con, $_POST['apellidop']);
-        $apellidom  = mysqli_real_escape_string($con, $_POST['apellidom']);
-        $email = mysqli_real_escape_string(
-            $con,
-            strtolower(trim($_POST['email']))
-        );
-        $telefono   = mysqli_real_escape_string($con, $_POST['telefono']);
-        $calle      = mysqli_real_escape_string($con, $_POST['calle']);
-        $exterior   = mysqli_real_escape_string($con, $_POST['exterior']);
-        $interior   = mysqli_real_escape_string($con, $_POST['interior']);
-        $colonia    = mysqli_real_escape_string($con, $_POST['colonia']);
-        $ciudad     = mysqli_real_escape_string($con, $_POST['ciudad']);
-        $estado     = mysqli_real_escape_string($con, $_POST['estado']);
-        $postal     = mysqli_real_escape_string($con, $_POST['postal']);
-        $pais       = mysqli_real_escape_string($con, $_POST['pais']);
-        $cupon      = mysqli_real_escape_string($con, $_POST['cuponLS']);
+        // Campos del formulario: ausentes => '' (sin warnings) y se validan los obligatorios
+        $campos = [];
+        foreach (['nombre', 'apellidop', 'apellidom', 'email', 'telefono', 'calle', 'exterior', 'interior', 'colonia', 'ciudad', 'estado', 'postal', 'pais', 'cuponLS'] as $campo) {
+            $campos[$campo] = trim((string)($_POST[$campo] ?? ''));
+        }
+        $obligatorios = [
+            'nombre' => 'Nombre', 'apellidop' => 'Apellido paterno', 'apellidom' => 'Apellido materno',
+            'email' => 'Email', 'telefono' => 'Teléfono', 'calle' => 'Calle', 'exterior' => 'Número exterior',
+            'colonia' => 'Colonia', 'ciudad' => 'Ciudad', 'estado' => 'Estado', 'postal' => 'Código postal', 'pais' => 'País',
+        ];
+        foreach ($obligatorios as $campo => $etiqueta) {
+            if ($campos[$campo] === '') {
+                throw new InvalidArgumentException("El campo \"$etiqueta\" es obligatorio.");
+            }
+        }
+
+        $nombre     = mysqli_real_escape_string($con, $campos['nombre']);
+        $apellidop  = mysqli_real_escape_string($con, $campos['apellidop']);
+        $apellidom  = mysqli_real_escape_string($con, $campos['apellidom']);
+        $email      = mysqli_real_escape_string($con, strtolower($campos['email']));
+        $telefono   = mysqli_real_escape_string($con, $campos['telefono']);
+        $calle      = mysqli_real_escape_string($con, $campos['calle']);
+        $exterior   = mysqli_real_escape_string($con, $campos['exterior']);
+        $interior   = mysqli_real_escape_string($con, $campos['interior']);
+        $colonia    = mysqli_real_escape_string($con, $campos['colonia']);
+        $ciudad     = mysqli_real_escape_string($con, $campos['ciudad']);
+        $estado     = mysqli_real_escape_string($con, $campos['estado']);
+        $postal     = mysqli_real_escape_string($con, $campos['postal']);
+        $pais       = mysqli_real_escape_string($con, $campos['pais']);
+        $cupon      = mysqli_real_escape_string($con, $campos['cuponLS']);
 
         $productos = json_decode($_POST['cartLS'], true);
         if (!is_array($productos)) {
@@ -252,20 +265,20 @@ if (isset($_POST['save'])) {
             throw new Exception($con->error);
         }
 
-        $nombreP    = trim($_POST['nombre']);
-        $apellidopP = trim($_POST['apellidop']);
-        $apellidomP = trim($_POST['apellidom']);
-        $emailP     = strtolower(trim($_POST['email']));
-        $telefonoC  = encrypt_data(trim($_POST['telefono']));
-        $calleC     = encrypt_data(trim($_POST['calle']));
-        $exteriorC  = encrypt_data(trim($_POST['exterior']));
-        $interiorC  = encrypt_data(trim($_POST['interior'] ?? ''));
-        $coloniaC   = encrypt_data(trim($_POST['colonia']));
-        $ciudadP    = trim($_POST['ciudad']);
-        $estadoP    = trim($_POST['estado']);
-        $postalC    = encrypt_data(trim($_POST['postal']));
-        $paisP      = trim($_POST['pais']);
-        $cuponP     = trim($_POST['cuponLS']);
+        $nombreP    = $campos['nombre'];
+        $apellidopP = $campos['apellidop'];
+        $apellidomP = $campos['apellidom'];
+        $emailP     = strtolower($campos['email']);
+        $telefonoC  = encrypt_data($campos['telefono']);
+        $calleC     = encrypt_data($campos['calle']);
+        $exteriorC  = encrypt_data($campos['exterior']);
+        $interiorC  = encrypt_data($campos['interior']);
+        $coloniaC   = encrypt_data($campos['colonia']);
+        $ciudadP    = $campos['ciudad'];
+        $estadoP    = $campos['estado'];
+        $postalC    = encrypt_data($campos['postal']);
+        $paisP      = $campos['pais'];
+        $cuponP     = $campos['cuponLS'];
 
         $stmtPedido->bind_param(
             "ssssssssssssssi",
@@ -441,6 +454,11 @@ if (isset($_POST['save'])) {
         mysqli_rollback($con);
         // echo "<pre>ERROR:\n" . $e->getMessage() . "</pre>";
         error_log($e->getMessage());
+        $_SESSION['alert'] = [
+            'title' => 'No se pudo guardar el pedido',
+            'message' => $e instanceof InvalidArgumentException ? $e->getMessage() : 'Ocurrió un error, intenta de nuevo.',
+            'icon' => 'error'
+        ];
         header("Location: " . url("checkout.php"));
         exit;
     }
