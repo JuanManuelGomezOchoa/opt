@@ -31,7 +31,9 @@ $extraCss = '
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">';
 include APP_PATH . '/app/screens/layout/head.php';
 ?>
+    <?php /* Google Maps desactivado (direcciones se capturan a mano)
     <script src="https://maps.googleapis.com/maps/api/js?key=<?= htmlspecialchars(env('GOOGLE_MAPS_API_KEY'), ENT_QUOTES, 'UTF-8'); ?>&libraries=places&callback=initMap" async></script>
+    */ ?>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let cart = localStorage.getItem("empresaCart");
@@ -48,6 +50,7 @@ include APP_PATH . '/app/screens/layout/head.php';
             }
         });
 
+        /* Google Maps desactivado: Autocomplete, initMap y handlePlaceChange
         let autocompleteInstances = {};
 
         function initMap() {
@@ -57,6 +60,7 @@ include APP_PATH . '/app/screens/layout/head.php';
             addressInputs.forEach(input => {
                 if (!autocompleteInstances[input.name]) {
                     autocompleteInstances[input.name] = new google.maps.places.Autocomplete(input, {
+                        types: ["address"],
                         fields: ["place_id", "address_components"],
                         componentRestrictions: {
                             country: ["mx"]
@@ -74,8 +78,8 @@ include APP_PATH . '/app/screens/layout/head.php';
         function handlePlaceChange(place) {
             const postalCodeInput = document.getElementById('postal');
 
-            if (!place.address_components) {
-                document.querySelectorAll("[required]").forEach(i => i.value = "");
+            // Sin lugar seleccionado (p. ej. Enter con texto libre) se conserva lo que el usuario escribió
+            if (!place || !place.address_components) {
                 return;
             }
 
@@ -114,6 +118,7 @@ include APP_PATH . '/app/screens/layout/head.php';
 
             validarFormulario();
         }
+        */
     </script>
     <?php include APP_PATH . '/app/screens/layout/navbar.php'; ?>
 
